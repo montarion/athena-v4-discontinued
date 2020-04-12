@@ -1,0 +1,14 @@
+on first run, the following must be done:
+
+- create a file called "userstore.json" in folder "data" with contents:
+
+{"anime":{"maindict":{}}
+
+- create a file called "settings.json" in folder "data" with contents:
+
+{}
+
+
+- create a redis dictionary object called "animedict" with contents:
+
+{"lastshow":"show"}

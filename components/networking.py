@@ -1,0 +1,148 @@
+import websockets, asyncio, os, json, re, requests, redis, threading
+from time import sleep
+
+from components.logger import logger as mainlogger
+from components.settings import settings
+
+class Networking:
+    def __init__(self):
+        self.logger("started")
+        
+        self.userdict = {}
+        self.loop = asyncio.new_event_loop()
+        self.websockdict = {}
+        self.r = redis.Redis(host='localhost', port=6379, db=0)
+        self.p = self.r.pubsub()
+        self.tag = "networking"
+        # subs
+        self.p.subscribe("sendmsg")
+        #p.run_in_thread(sleep_time=0.1)
+
+    def logger(self, msg, type="info", colour="none"):
+        self.tag = "networking"
+        mainlogger().logger(self.tag, msg, type, colour)
+
+    async def msgcheck(self):
+        # pubsub checker to send messages
+        while True:
+            msg = self.p.get_message()
+            if msg and type(msg["data"]) != int:
+                data = json.loads(msg["data"].decode())
+                command = data["command"]
+                if command == "sendmsg":
+                    msg = data["msg"]
+                    self.logger(f"message is: \n{msg}")
+                    pretargetlist = settings().findtarget(data["target"])
+                    if pretargetlist["status"] == 200:
+                        targetlist = pretargetlist["resource"]
+                        for target in targetlist:
+                            self.logger(f"target is: {target}")
+                            await self.sendbyname(msg, target)
+                    else:
+                        self.logger(pretargetlist["resource"])
+            await asyncio.sleep(3)
+
+    async def runserver(self, websocket, path):
+        self.logger("in server")
+        try:
+            while True:
+                data = await websocket.recv()
+                self.logger(data)
+                datadict = json.loads(data)
+                datadict["metadata"].update({"websocket":websocket})
+                await self.messagehandler(datadict)
+        except Exception as e:
+            pattern = "code = ([0-9]*).*"
+            searchres = re.search(pattern, str(e))
+            realerror = searchres.group(1)
+
+            self.logger(realerror, "debug", "red")
+            if realerror == "1006":
+                self.logger("Connection closed by peer.")
+                await websocket.close(4000)
+            elif realerror == "4000":
+                self.logger("Connection reset.")
+                await websocket.close(4000)
+            else:
+                self.logger(e)
+                await websocket.close(4000)
+        
+
+    async def send(self, message, websocket):
+        await websocket.send(message)
+        self.logger("message sent")
+
+    async def sendbyname(self, message, name):
+        if type(message) != dict:
+            message = json.loads(message)
+        self.logger(f"sendbyname: message: {message}")
+        if name in self.websockdict:
+            websocket = self.websockdict[name]
+            try:
+                await websocket.send(json.dumps(message))
+                self.logger("message sent")
+                return {"status": 200, "resource":message}
+            except Exception as e:
+                return {"status": 503, "resource": f"sending to {name} failed."}
+        else:
+            return {"status": 404, "resource": f"{name} not found"}
+    async def getwebsockdict(self):
+        res = self.websockdict
+        return res
+
+    def findtarget(self, search):
+        finalnames = []
+        with open("data/userstore.json", "r") as f:
+            userdict = json.loads(f.read())
+
+        for machine in userdict:
+            name = machine
+            capabilities = userdict[machine]["capabilities"]
+            subscription = userdict[machine]["subscriptions"]
+            type = userdict[machine]["type"]
+            if search == name:
+                finalnames.append(machine)
+            elif search in capabilities:
+                finalnames.append(machine)
+            elif search in subscription:
+                finalnames.append(machine)
+            elif search in type:
+                finalnames.append(machine)
+        return finalnames
+
+    async def messagehandler(self, messagedict):
+        command = messagedict["operation"]
+
+        if command == "signin":
+            self.logger("Got sign in request!")
+            name = messagedict["data"]["name"]
+            type = messagedict["data"]["type"]
+            subs = messagedict["data"]["subscriptions"]
+            capabilities = messagedict["data"]["capabilities"]
+            websocket = messagedict["metadata"]["websocket"]
+            address = websocket.remote_address[0]
+            if name in self.websockdict:
+                self.logger(f"closing old websocket for {name}")
+                await self.websockdict[name].close(4000)
+            self.websockdict[name] = websocket
+            
+            # TODO: make this respond to what the user has actually sent(something might be missing)
+            newdata = {"type":type, "subscriptions":subs, "lastaddress":address, "capabilities":capabilities}
+            result = settings().setusersettings(name, newdata)
+            if result["status"] == 201: # 201 because creation
+                self.logger(result["resource"], "debug")
+                id = result["resource"]["id"]
+                msg = json.dumps({"status":200, "command":"signin", "id":id})
+            else: # maybe do different error codes here at some point
+                msg = json.dumps({"status":503, "resource":"failed to sign in", "command":"signin"})
+            await self.send(msg, messagedict["metadata"]["websocket"])
+
+
+    def startserving(self):
+        serveserver = websockets.server.serve(self.runserver, "0.0.0.0", 8000, loop=self.loop, ping_interval=5)
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_until_complete(serveserver)
+        self.loop.run_until_complete(self.msgcheck())
+        self.loop.run_forever()
+
+

@@ -1,0 +1,4 @@
+redis
+beautifulsoup4
+websockets
+feedparser
