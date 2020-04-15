@@ -45,10 +45,11 @@ class anime:
                 sessiondict["title"] = show
                 sessiondict["episode"] = episode
                 if show not in self.maindict:
-                    imagelink, bannerlink = self.getimage(show)
+                    imagelink, bannerlink, maxepisodes = self.getinfo(show) #TODO add synopsis
                     self.maindict[show] = {"art":{}}
                     self.maindict[show]["art"]["cover"] = imagelink
                     self.maindict[show]["art"]["banner"] = bannerlink
+                    self.maindict[show]["meta"]["maxepisodes"] = maxepisodes
                 sessiondict["imagelink"] = self.maindict[show]["art"]["cover"]
                 sessiondict["bannerlink"] = self.maindict[show]["art"]["banner"]
 
@@ -73,28 +74,22 @@ class anime:
         newtitle = f"{show} - {episode}.mkv"
         return newtitle, show, episode
 
-    def getimage(self, name):
-        query = "query($title: String){Media (search: $title, type: ANIME){ coverImage{extraLarge}}}" # this is graphQL, not REST
+    def getinfo(self, name):
+        query = "query($title: String){Media (search: $title, type: ANIME){episodes, bannerImage, coverImage{extraLarge}}}" # this is graphQL, not REST
         variables = {'title': name}
         url = 'https://graphql.anilist.co'
         response = requests.post(url, json={'query': query, 'variables': variables})
-        try:
-            preurl = json.loads(response.text)["data"]["Media"]["coverImage"]
-        except Exception as e:
-            self.logger(f"error when asking cover image for show: {name}")
-        if "large" in preurl:
-            imageurl = preurl["large"]
-        else:
-            imageurl = preurl["extraLarge"]
-        # get cover art
-        query = "query($title: String){Media (search: $title, type: ANIME){ bannerImage}}"
-        response = requests.post(url, json={'query': query, 'variables': variables})
-        try:
-            bannerurl = json.loads(response.text)["data"]["Media"]["bannerImage"]
-        except Exception as e:
-            self.logger(f"error when asking banner image for show: {name}")
-            bannerurl = imageurl
-        return imageurl, bannerurl
+        preurl = json.loads(response.text)["data"]["Media"]
+
+        coverdict = preurl["coverImage"]
+        bannerurl = preurl["bannerImage"]
+        maxepisodes = preurl["episodes"]
+
+        coverurl = coverdict[list(coverdict.keys())[0]]
+        if bannerurl == None:
+            bannerurl = coverurl
+
+        return imageurl, bannerurl, maxepisodes
 
 
     def download(self, show, link):
