@@ -1,6 +1,18 @@
 # athena-ui
 ## Vue webfront for Athena V4
 
+## Install Vue/CLI
+run in any CLI, in any folder:
+```
+npm install -g @vue/cli
+```
+
+to run in a Vue-GUI, run in any CLI, in any folder:
+
+```
+vue ui
+```
+
 ## Project setup
 run in the athena-ui folder within any CLI:
 ```
