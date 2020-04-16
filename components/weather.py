@@ -12,7 +12,7 @@ class weather:
     def logger(self, msg, type="info", colour="none"):
         mainlogger().logger(self.tag, msg, type, colour)
 
-    def getforecast(self):
+    def getcurrentweather(self):
         prelocation = settings().getsettings("personalia", "location")["resource"]
         if "coords" not in prelocation:
             self.logger("Unable to find coordinates")
@@ -27,7 +27,7 @@ class weather:
             # then try again
             #self.getforecast()
 
-        title = prelocation["name"]
+        title = prelocation["name"] # if coords are in, name will also be in
         apikey = prelocation["apikey"]
 
         baseurl = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={apikey}&units=metric"
@@ -48,8 +48,10 @@ class weather:
             rain = cur.get("rain", None)
             windspeed = cur["wind_speed"]
             icon = cur["weather"][0]["icon"]
-
-            curdict = {"time": dt, "temp":temp, "rain":rain, "sunrise":sunrise, "sunset":sunset, "clouds":clouds, "windspeed":windspeed, "icon":icon}
+            iconbase = "http://openweathermap.org/img/wn/"
+            self.logger(f"icon is {icon}")
+            iconurl = iconbase + icon + "@2x.png"
+            curdict = {"location": title, "time": dt, "temp":temp, "rain":rain, "sunrise":sunrise, "sunset":sunset, "clouds":clouds, "windspeed":windspeed, "iconurl":iconurl}
             # cache this to file, maybe?
 
             return {"status":200, "resource":curdict}
