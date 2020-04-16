@@ -46,7 +46,7 @@ class anime:
                 sessiondict["episode"] = episode
                 if show not in self.maindict:
                     imagelink, bannerlink, maxepisodes = self.getinfo(show) #TODO add synopsis
-                    self.maindict[show] = {"art":{}}
+                    self.maindict[show] = {"art":{}, "meta":{}}
                     self.maindict[show]["art"]["cover"] = imagelink
                     self.maindict[show]["art"]["banner"] = bannerlink
                     self.maindict[show]["meta"]["maxepisodes"] = maxepisodes
@@ -89,7 +89,7 @@ class anime:
         if bannerurl == None:
             bannerurl = coverurl
 
-        return imageurl, bannerurl, maxepisodes
+        return coverurl, bannerurl, maxepisodes
 
 
     def download(self, show, link):
