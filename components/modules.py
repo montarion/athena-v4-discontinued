@@ -19,4 +19,4 @@ class Modules:
             anime().getshows()
 
             Event().anime()
-            sleep(20)
+            sleep(60)
