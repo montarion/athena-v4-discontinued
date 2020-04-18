@@ -37,11 +37,19 @@ class settings:
             return {"status": 404, "resource": f"Couldn't find {name}"}
 
 
-    def setsettings(self, category, itemname, item, append = False):
+    def setsettings(self, category, itemname, item, overwrite = False):
         # implement feature to append to list/dict, instead of overwrite
         with open(self.settingsfile) as f:
             data = json.loads(f.read())
         if category in data:
+            if itemname in data[category]:
+                if overwrite:
+                    subitem = data[category][itemname]
+                    if type(subitem) == list:
+                        newitem = subitem + item
+                        item = newitem
+                    if type(subitem) == dict:
+                        item.update(subitem)
             data[category][itemname] = item
             self.savefile(self.settingsfile, data)
             return {"status":201, "resource":f"Saved {itemname}"}
