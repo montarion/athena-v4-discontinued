@@ -4,3 +4,10 @@
 ```bash
     npx serve
 ```
+
+## OR
+
+ 
+```bash
+    python3 -m http.server [port]
+```
