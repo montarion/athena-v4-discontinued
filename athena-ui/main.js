@@ -7,7 +7,7 @@ import Navigo from 'https://unpkg.com/navigo@7.1.2/lib/navigo.es.js'
 
 console.log('%c Athena: Hello', 'background-color: black; color: blue;')
 
-class MyAwesomeApp extends LitElement {
+class AthenaRouterOutlet extends LitElement {
   static get properties() {
     return {
       route: { type: Object }
@@ -49,4 +49,4 @@ class MyAwesomeApp extends LitElement {
     `
   }
 }
-customElements.define('my-awesome-app', MyAwesomeApp)
+customElements.define('athena-router-outlet', AthenaRouterOutlet)
