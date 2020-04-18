@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Athena V4</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+
+  <script type="module">
+    import './pages/Anime.js';
+    import './pages/MOTD.js';
+    import './pages/Home.js';
+  </script>
+</head>
+
+<body>
+
+  <div id="app" class="container">
+
+    <div class="vertical-menu">
+      <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
+      <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
+      <a class="nav-link" href="#!/motd"> MOTD <i class="fas fa-envelope-open-text"></i></a>
+
+    </div>
+    <div class="text-center">
+      <my-awesome-app></my-awesome-app>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+
+
+</body>
+
+</html>
