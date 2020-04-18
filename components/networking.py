@@ -3,6 +3,8 @@ from time import sleep
 
 from components.logger import logger as mainlogger
 from components.settings import settings
+from components.anime import anime
+from components.weather import weather
 
 class Networking:
     def __init__(self):
@@ -49,6 +51,8 @@ class Networking:
                 data = await websocket.recv()
                 self.logger(data)
                 datadict = json.loads(data)
+                if "metadata" not in datadict:
+                    datadict["metadata"] = {}
                 datadict["metadata"].update({"websocket":websocket})
                 await self.messagehandler(datadict)
         except Exception as e:
@@ -91,15 +95,17 @@ class Networking:
         return res
 
     def findtarget(self, search):
+        search = str(search)
         finalnames = []
         with open("data/userstore.json", "r") as f:
             userdict = json.loads(f.read())
-
+        
         for machine in userdict:
             name = machine
             capabilities = userdict[machine]["capabilities"]
             subscription = userdict[machine]["subscriptions"]
             type = userdict[machine]["type"]
+            id = userdict[machine]["id"]
             if search == name:
                 finalnames.append(machine)
             elif search in capabilities:
@@ -108,10 +114,12 @@ class Networking:
                 finalnames.append(machine)
             elif search in type:
                 finalnames.append(machine)
+            elif search in str(id):
+                finalnames.append(machine)
         return finalnames
 
     async def messagehandler(self, messagedict):
-        command = messagedict["operation"]
+        command = messagedict["operation"] #TODO: make this lists, so you can accept multiple commands at a time
 
         if command == "signin":
             self.logger("Got sign in request!")
@@ -137,9 +145,32 @@ class Networking:
                 msg = json.dumps({"status":503, "resource":"failed to sign in", "command":"signin"})
             await self.send(msg, messagedict["metadata"]["websocket"])
 
+        if command == "anime":
+            id = str(messagedict["id"])
+            numberofshows = 1
+            if "data" in messagedict.keys():
+                numberofshows = messagedict["data"]["shows"]
+            targetlist = self.findtarget(id)
+            if len(targetlist) > 0:
+                animeresults = anime().getshows(numberofshows)
+                animeresults["command"] = "anime"
+                self.logger(f"targetlist: {targetlist}")
+                for target in targetlist:
+                    await self.sendbyname(animeresults, target)
+
+        if command == "weather":
+            senddict = {"command": "weather"}
+            id = str(messagedict["id"])
+            targetlist = self.findtarget(id)
+            if len(targetlist) > 0:
+                weatherresults = weather().getcurrentweather()["resource"]
+                weatherresults["command"] = "weather"
+                self.logger(f"targetlist: {targetlist}")
+                for target in targetlist:
+                    await self.sendbyname(weatherresults, target)
 
     def startserving(self):
-        serveserver = websockets.server.serve(self.runserver, "0.0.0.0", 8000, loop=self.loop, ping_interval=5)
+        serveserver = websockets.server.serve(self.runserver, "0.0.0.0", 8000, loop=self.loop, ping_interval=60)
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(serveserver)
         self.loop.run_until_complete(self.msgcheck())
