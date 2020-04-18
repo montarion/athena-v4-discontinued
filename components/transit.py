@@ -50,3 +50,22 @@ class transit:
 
         result = requests.get(url=url, params= params, headers=headers)
         return result.json()
+
+    def getnextdeparturesatstop(self, busstopid = None):
+        if not busstopid:
+            prebusstop = settings().getsettings("Personalia", "homebusid")
+            if prebusstop["status"] == 200:
+                 busstopid = prebusstop["resource"]
+            else:
+                # alert the user to ask for busstop id
+                pass
+        url = "https://transit.hereapi.com/v8/departures"
+        headers = self.getauthentication()
+        params = {
+                "ids":busstopid
+                }
+
+        result = requests.get(url=url, params= params, headers=headers)
+        return result.json()
+
+
