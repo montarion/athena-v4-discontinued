@@ -16,9 +16,6 @@ class AnimePage extends LitElement {
 
                     <div class="card"></div>
                     <div class="card"></div>
-
-                    <div class="card"></div>
-                    <div class="card"></div>
                 </div>
             </div>
         </div>
