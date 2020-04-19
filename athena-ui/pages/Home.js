@@ -7,7 +7,7 @@ import {
 class HomePage extends LitElement {
   render() {
     return html`
-	<div class="home">
+    <div class="home">
     <div class="main">
       <h1 class="site-title">Welcome to Athena</h1>
       <div class="content">
@@ -43,25 +43,23 @@ class HomePage extends LitElement {
   static get styles() {
     return css`
 
-    .title, .site-title{
+    .title, site-title { 
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
       width:100%;
       text-shadow: 1px 1px #000000;
-      border-radius: 0.5em;
-      color: white;
+      background-image: linear-gradient(to bottom, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
     }
     .title{
-      background: linear-gradient(to bottom, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
-      font-size: xx-large;
+        font-size: xx-large;
     }
 
     .info {
+      
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
       width: 100%;
-      border-radius: 0.5em;
-      //background: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
+      background-color: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
       text-shadow: 1px 1px #000000;
     }
 
@@ -76,17 +74,17 @@ class HomePage extends LitElement {
     .card {
       min-height: 10em;
       max-height: 10em;
-      border-radius: 0.5em;
+      border-radius: 10px;
       margin-bottom: 1em;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: flex-start;
-      //background: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
   }
 
   .system {
-    background-image:
+     // I really want linear gradient to be part of .card... [TODO]
+    background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
     height: 10em; /* You must set a specified height */
@@ -98,7 +96,6 @@ class HomePage extends LitElement {
   }
 
   .anime {
-    
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://tokyo.nl/wp-content/uploads/2014/10/manga-tekeningen.jpg");
@@ -108,9 +105,10 @@ class HomePage extends LitElement {
     background-size: cover; /* Resize the background image to cover the entire container */
 
     color: white;
+  }
 
   .weather {
-    background-image:
+    background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
     height: 10em; /* You must set a specified height */
@@ -122,7 +120,7 @@ class HomePage extends LitElement {
   }
 
   .events {
-    background-image:
+    background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
     height: 10em; /* You must set a specified height */
@@ -132,7 +130,10 @@ class HomePage extends LitElement {
 
     color: white;
   }
-
+    
+  .title {
+    color: white;
+  }
    .subtitle {
       margin: 0;
       padding: 0;
@@ -160,3 +161,4 @@ class HomePage extends LitElement {
 }
 
 customElements.define('home-page', HomePage)
+
