@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Athena V4</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+  <link rel="stylesheet" href={{ url_for('static',filename='css/style.css') }}>
+  <script type="module" src={{ url_for('static',filename='scripts/main.js') }}></script>
+  <script type="text/javascript" src={{ url_for('static',filename='scripts/networking.js') }}></script>
+
+  <script type="module">
+    import "{{ url_for('static',filename='pages/Anime.js') }}";
+    import "{{ url_for('static',filename='pages/MOTD.js') }}";
+    import "{{ url_for('static',filename='pages/Home.js') }}";
+  </script>
+</head>
+
+<body>
+
+  <div id="app" class="container">
+
+    <div class="vertical-menu">
+      <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
+      <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
+      <a class="nav-link" href="#!/motd"> MOTD <i class="fas fa-envelope-open-text"></i></a>
+
+    </div>
+    <div class="text-center">
+      <athena-router-outlet></athena-router-outlet>
+    </div>
+  </div>
+
+  <!--<script type="module" src="./main.js"></script>-->
+
+
+</body>
+
+</html>
