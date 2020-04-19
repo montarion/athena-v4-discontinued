@@ -1,31 +1,67 @@
 # run webserver with
-
+```bash
 python3 components/website.py
+```
 
 ## API stuff
 
 # message object from the server looks like
+```json
+{
+  "category": "String", 
+  "type": "String",
+  "data": {},
+  "metadata": {}
+}
+```
 
-{"category": String, "type": String, "data":{}, "metadata":{}}
-
-
-category "anime":
+## Category "anime":
 
 type "latest":
-"data": {"name": String, "art": {"banner": URL, "cover": URL}, "episode": Int}
+```json
+{
+  "data": {
+    "name": "String", 
+    "art": {
+        "banner": "URL", 
+        "cover": "URL"
+     },
+    "episode": 1
+   }
+}
+```
 (nog geen progress info)
 
 type "list":
 "data": {[String, String, String, ...]}
 
 type "showinfo":
-"data": {"name": String, "art": {"banner": URL, "cover": URL}, "episode": Int}
+```json
+{
+  "data": {
+    "name": "String",
+    "art": {
+      "banner": "URL",
+      "cover": "URL"
+     }, 
+   "episode": 1
+   }
+}
+```
 
 * required parameter "show" in data.
 
 
-to request data from the server simply send a json dict that looks like
+to **request data** from the server simply send a json dict that looks like
+```json
+{
+  "category": "anime",
+  "type": "showinfo",
+  "data": {
+    "show":"One Piece"
+  },
+  "metadata":{}
+}
+```
 
-{"category": "anime", "type": "showinfo", "data": {"show":"One Piece"}, "metadata":{}}
 (only category and type are mandatory)
-
