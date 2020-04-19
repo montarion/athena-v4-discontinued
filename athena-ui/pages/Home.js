@@ -9,7 +9,7 @@ class HomePage extends LitElement {
     return html`
 	<div class="home">
     <div class="main">
-      <h1 class="title">Welcome to Athena</h1>
+      <h1 class="site-title">Welcome to Athena</h1>
       <div class="content">
         <div class="card full system">
           <div class="title">System Stats</div>
@@ -43,20 +43,25 @@ class HomePage extends LitElement {
   static get styles() {
     return css`
 
-    .title { 
+    .title, .site-title{
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
       width:100%;
       text-shadow: 1px 1px #000000;
-      background-color: rgba(0,0,0, 0.5);
+      border-radius: 0.5em;
+      color: white;
+    }
+    .title{
+      background: linear-gradient(to bottom, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
+      font-size: xx-large;
     }
 
     .info {
-      
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
       width: 100%;
-      background-color: rgba(0,0,0, 0.5);
+      border-radius: 0.5em;
+      //background: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
       text-shadow: 1px 1px #000000;
     }
 
@@ -71,17 +76,19 @@ class HomePage extends LitElement {
     .card {
       min-height: 10em;
       max-height: 10em;
-      // border-top-left-radius: 2em;
-      // border-top-right-radius: 2em;
+      border-radius: 0.5em;
       margin-bottom: 1em;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: flex-start;
+      //background: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
   }
 
   .system {
-    background-image: url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
+    background-image:
+        linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
     height: 10em; /* You must set a specified height */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
@@ -91,17 +98,21 @@ class HomePage extends LitElement {
   }
 
   .anime {
-    background-image: url("https://tokyo.nl/wp-content/uploads/2014/10/manga-tekeningen.jpg");
+    
+    background-image: 
+        linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url("https://tokyo.nl/wp-content/uploads/2014/10/manga-tekeningen.jpg");
     height: 10em; /* You must set a specified height */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
 
     color: white;
-  }
 
   .weather {
-    background-image: url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
+    background-image:
+        linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
     height: 10em; /* You must set a specified height */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
@@ -111,7 +122,9 @@ class HomePage extends LitElement {
   }
 
   .events {
-    background-image: url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
+    background-image:
+        linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
     height: 10em; /* You must set a specified height */
     background-position: center; /* Center the image */
     background-repeat: no-repeat; /* Do not repeat the image */
@@ -119,10 +132,7 @@ class HomePage extends LitElement {
 
     color: white;
   }
-    
-  .title {
-    color: white;
-  }
+
    .subtitle {
       margin: 0;
       padding: 0;
