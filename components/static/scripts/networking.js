@@ -7,6 +7,10 @@ console.log(ws.readyState);
 
 ws.onopen = function(e) {
     console.log("open");
-    ws.send("echo test");
+    var test = {category: "anime", type:"list"};
+    ws.send(JSON.stringify(test));
 };
 
+ws.onmessage = function(e) {
+    console.log("Message received: " , e);
+};
