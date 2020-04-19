@@ -2,4 +2,5 @@ redis
 beautifulsoup4
 websockets
 feedparser
-Flask_Sockets
+flask_Sockets
+flask
