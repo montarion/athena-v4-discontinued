@@ -55,7 +55,6 @@ class HomePage extends LitElement {
     }
 
     .info {
-      
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
       width: 100%;
@@ -83,7 +82,7 @@ class HomePage extends LitElement {
   }
 
   .system {
-     // I really want linear gradient to be part of .card... [TODO]
+    /*I really want linear gradient to be part of .card... [TODO]*/ 
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
