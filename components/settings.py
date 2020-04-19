@@ -1,7 +1,9 @@
 import os, json, redis
 from time import sleep
-from components.logger import logger as mainlogger
-
+try:
+    from components.logger import logger as mainlogger
+except:
+    from logger import logger as mainlogger
 class settings:
     def __init__(self):
         self.tag = "settings"
