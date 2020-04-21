@@ -6,15 +6,22 @@ from geventwebsocket.handler import WebSocketHandler
 
 try:
     from components.settings import settings
+    from components.logger import logger as mainlogger
 except:
     from settings import settings
-import os, json, redis
+    from logger import logger as mainlogger
+
+import sys, os, json, redis
 
 
 class website:
     def __init__(self):
         self.app = Flask(__name__)
         self.sockets = Sockets(self.app)
+
+    def logger(self, msg, type="info", colour="none"):
+        self.tag = "website"
+        mainlogger().logger(self.tag, msg, type, colour)
 
     def messagehandler(self, ws, message):
             message = json.loads(message)
@@ -35,6 +42,32 @@ class website:
                         finaldict = {"status": 500, "category": category, "type": type}
                         ws.send(json.dumps(finaldict))
 
+                if type == "latest":
+                    self.logger(data)
+                    preanidict = settings().getsettings("anime") # get full anime dict
+                    if preanidict["status"] == 200:
+                        
+                        anidict = preanidict["resource"]
+
+                        self.logger(anidict.keys(), "blue")
+                        latestshow = anidict["lastshow"] # catch errors for these
+                        anilist = anidict["list"]
+                        maindict = anidict["maindict"]
+                        showinfo = maindict[latestshow]
+                        showinfo["title"] = latestshow
+                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo}
+                        ws.send(json.dumps(finaldict))
+
+                if type == "showinfo":
+                    targetshow = data["show"]
+                    premaindict = settings().getsettings("anime", "maindict")
+                    if premaindict["status"] == 200:
+                        maindict = premaindict["resource"]
+                        showinfo = maindict[targetshow] # might not exist
+                        showinfo["title"] = targetshow
+                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo}
+                        ws.send(json.dumps(finaldict))
+
     def runserver(self):
 
         @self.sockets.route('/')
@@ -42,14 +75,14 @@ class website:
             try:
                 while not ws.closed:
                     message = ws.receive()
-                    print(f"Message received: {message}")
-                    self.messagehandler(ws, message)
-                    ws.send(message)
-            except webSocketError:
-                print("lost connection!")
+                    if message:
+                        self.logger(f"Message received: {message}")
+                        self.messagehandler(ws, message)
+            #except webSocketError:
+            #    self.logger("lost connection!")
             except Exception as e:
-                print("ERROR!")
-                print(e.__class__.__name__)
+                self.logger(e, "alert", "red")
+                self.logger(e.__class__.__name__)
 
         @self.app.route('/')
         def hello():
@@ -60,5 +93,5 @@ class website:
         server.serve_forever()
 
 if __name__ == "__main__":
-    print("Starting as standalone")
+    self.logger("Starting as standalone", "info", "blue")
     website().runserver()
