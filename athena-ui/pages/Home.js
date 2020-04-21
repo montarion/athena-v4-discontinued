@@ -5,6 +5,15 @@ import {
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 
 class HomePage extends LitElement {
+
+  goToAnime() {
+    document.location = '#!/anime';
+  }
+
+  goToEvents() {
+    document.location = '#!/events';
+  }
+
   render() {
     return html`
     <div class="home">
@@ -17,7 +26,7 @@ class HomePage extends LitElement {
             CPU: 62%  | RAM: 74%  |  GREEN
           </div>
         </div>
-        <div class="card full anime">
+        <div class="card full anime"  @click="${this.goToAnime}">
         <div class="title">Anime</div>
           <div class="info">
             Newest release: Shagugan No Shana S3 E1 | D
@@ -29,7 +38,7 @@ class HomePage extends LitElement {
            Dutch weather sucks anyways
           </div>
         </div>
-        <div class="card half events">
+        <div class="card half events" @click="${this.goToEvents}">
         <div class="title">Upcoming Events</div>
           <div class="info">
            FortaRock 2020 \\m/
@@ -42,6 +51,10 @@ class HomePage extends LitElement {
   }
   static get styles() {
     return css`
+
+    .card:hover {
+      color: #2CB2FF;
+    }
 
     .title, site-title { 
       padding-top: 0.3rem;
@@ -104,6 +117,7 @@ class HomePage extends LitElement {
     background-size: cover; /* Resize the background image to cover the entire container */
 
     color: white;
+
   }
 
   .weather {

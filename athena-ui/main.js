@@ -20,14 +20,15 @@ class AthenaRouterOutlet extends LitElement {
     this.id = Math.floor(Math.random() * Math.floor(999));
     console.log(`Connecting to socket as: ${this.id}`)
 
-    this.client = new WebSocket("wss://echo.websocket.org"); // this socket echo's everything back that you send to it
+    this.client = new WebSocket("ws://83.163.109.161:8080"); //wss://echo.websocket.org
     this.client.onopen = () => {
-      console.log('connected to socket:', this.client.url)
-      this.client.send(`Hello from ${this.id}`)
+      console.log('connected to socket at:', this.client.url)
+      const test = JSON.stringify({category: "anime", type:"list"});
+      this.client.send(test);
     };
 
     this.client.onmessage = (event) => {
-      console.log('RECEIVED: ' + event.data);
+      console.log('RECEIVED: ', JSON.parse(event.data));
     };
 
     let router = new Navigo('/', true, '#!')
@@ -42,9 +43,9 @@ class AthenaRouterOutlet extends LitElement {
         <anime-page></anime-page>
         `
       })
-      .on('motd', () => {
+      .on('events', () => {
         this.route = html`
-        <motd-page></motd-page>
+        <events-page></events-page>
         `
       })
       //should be the last 'catch'
