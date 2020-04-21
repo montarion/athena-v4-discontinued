@@ -4,12 +4,12 @@ import {
   css
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 
-class MOTDPage extends LitElement {
+class Events extends LitElement {
   render() {
     return html`
       <div class="motd">
       <div class="main">
-        <h1 class="title">Message Of The Day</h1>
+        <h1 class="title">Upcoming Events</h1>
         <div class="content">
           <div class="card">
             <h2 class="subtitle">Something cool happened!</h2>
@@ -69,4 +69,4 @@ class MOTDPage extends LitElement {
   }
 }
 
-customElements.define('motd-page', MOTDPage)
+customElements.define('events-page', Events)
