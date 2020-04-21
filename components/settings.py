@@ -13,7 +13,7 @@ class settings:
     def logger(self, msg, type="info", colour="none"):
         mainlogger().logger(self.tag, msg, type, colour)
 
-    def getsettings(self, category, item):
+    def getsettings(self, category, item = None):
         with open(self.settingsfile) as f:
             data = json.loads(f.read())
 

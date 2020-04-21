@@ -1,6 +1,6 @@
-redis
-beautifulsoup4
-websockets
-feedparser
-flask_Sockets
-flask
+redis==3.3.11
+beautifulsoup4==4.8.2
+websockets==8.1
+feedparser==5.2.1
+flask_Sockets==0.2.1
+flask==1.1.1
