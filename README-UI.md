@@ -21,7 +21,7 @@ type "latest":
 ```json
 {
   "data": {
-    "name": "String", 
+    "title": "String", 
     "art": {
         "banner": "URL", 
         "cover": "URL"
@@ -39,7 +39,7 @@ type "showinfo":
 ```json
 {
   "data": {
-    "name": "String",
+    "title": "String",
     "art": {
       "banner": "URL",
       "cover": "URL"
