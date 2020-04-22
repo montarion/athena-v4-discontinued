@@ -1,6 +1,6 @@
 // networking
 
-var ws = new WebSocket("ws://192.168.178.34:8080/");
+var ws = new WebSocket("ws://83.163.109.161:8080/");
 console.log("connecting");
 
 console.log(ws.readyState);
@@ -17,7 +17,6 @@ ws.onmessage = function(e) {
 
 function sendmsg(category, type, data = {}, metadata = {}) {
     var msg = {"category": category, "type": type, "data": data, "metadata": metadata};
-    console.log(msg);
-    console.log(ws);
     ws.send(JSON.stringify(msg));
+    console.log("Sent message");
 };
