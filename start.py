@@ -7,10 +7,10 @@ from time import sleep
 
 t1 = threading.Thread(target=Networking().startserving)
 t2 = threading.Thread(target=Modules().standard)
-t3 = threading.Thread(target=website().runsite)
+t3 = threading.Thread(target=website().runserver)
 
 
 t1.start()
 t2.start()
-#t3.start()
+t3.start()
 
