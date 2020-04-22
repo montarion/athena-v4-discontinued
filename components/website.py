@@ -32,6 +32,26 @@ class website:
             metadata = message.get("metadata", {}) # optional
 
             if category == "anime":
+                if type == "help":
+                    methods = ["list", "latest", "showinfo"]
+                    helpdata = data["method"] or None
+                    if helpdata == None:
+                        message = "Please try inserting one of the methods as data, like: data:{\"method\":\"list\"}"
+                        finaldict = {"methods": methods, "message":message}
+                        ws.send(json.dumps(finaldict))
+                    elif helpdata == "list":
+                        message = "TODO implement help message"
+                        finaldict = {"message":message}
+                        ws.send(json.dumps(finaldict))
+                    elif helpdata == "latest":
+                        message = "TODO implement help message"
+                        finaldict = {"message":message}
+                        ws.send(json.dumps(finaldict))
+                    elif helpdata == "showinfo":
+                        message = "TODO implement help message"
+                        finaldict = {"message":message}
+                        ws.send(json.dumps(finaldict))
+
                 if type == "list":
                     preanilist = settings().getsettings("anime", "list")
                     if preanilist["status"] == 200:
@@ -46,9 +66,8 @@ class website:
                     self.logger(data)
                     preanidict = settings().getsettings("anime") # get full anime dict
                     if preanidict["status"] == 200:
-                        
-                        anidict = preanidict["resource"]
 
+                        anidict = preanidict["resource"]
                         self.logger(anidict.keys(), "blue")
                         latestshow = anidict["lastshow"] # catch errors for these
                         anilist = anidict["list"]
@@ -67,6 +86,26 @@ class website:
                         showinfo["title"] = targetshow
                         finaldict = {"status": 200, "category": category, "type": type, "data":showinfo}
                         ws.send(json.dumps(finaldict))
+
+            if category == "weather":
+                # TODO remove when implemented
+                finaldict = {"status": 501, "category": category}
+                ws.send(json.dumps(finaldict))
+
+                if type == "current": # require data to include location
+                    # TODO implement
+                    pass
+
+            if category == "calendar":
+                # TODO remove when implemented
+                finaldict = {"status": 501, "category": category}
+                ws.send(json.dumps(finaldict))
+
+            if category == "monitor":
+                # TODO remove when implemented
+                finaldict = {"status": 501, "category": category}
+                ws.send(json.dumps(finaldict))
+
 
     def runserver(self):
 
@@ -93,5 +132,5 @@ class website:
         server.serve_forever()
 
 if __name__ == "__main__":
-    self.logger("Starting as standalone", "info", "blue")
+    website().logger("Starting as standalone", "info", "blue")
     website().runserver()
