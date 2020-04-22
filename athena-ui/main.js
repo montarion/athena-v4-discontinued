@@ -5,31 +5,30 @@ import {
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 import Navigo from 'https://unpkg.com/navigo@7.1.2/lib/navigo.es.js'
 
-console.log('%c Athena: Hello', 'background-color: black; color: blue;')
+console.log('%c Athena: Hello', 'background-color: black; color: red;')
 
 class AthenaRouterOutlet extends LitElement {
   static get properties() {
     return {
       route: { type: Object },
-      client: { type: Object },
-      id: { type: Object } // id can be between 0-999  
+      // client: { type: Object },
+      // clientIsConnected: { type: Boolean },
+      // id: { type: Object }, // id can be between 0-999  
+      // latestAnime: { type: Object }
+
     }
   }
+
   constructor() {
     super()
-    this.id = Math.floor(Math.random() * Math.floor(999));
-    console.log(`Connecting to socket as: ${this.id}`)
 
-    this.client = new WebSocket("ws://83.163.109.161:8080"); //wss://echo.websocket.org
-    this.client.onopen = () => {
-      console.log('connected to socket at:', this.client.url)
-      const test = JSON.stringify({category: "anime", type:"list"});
-      this.client.send(test);
-    };
+    // const test = JSON.stringify({ category: "anime", type: "latest" });
+    // const test2 = JSON.stringify({ category: "anime", type: "list" });
+    // const test3 = JSON.stringify({ category: "anime", type: "showinfo", data: { show: "One Piece" } });
+    // this.client.send(test);
+    // this.client.send(test2);
+    // this.client.send(test3);
 
-    this.client.onmessage = (event) => {
-      console.log('RECEIVED: ', JSON.parse(event.data));
-    };
 
     let router = new Navigo('/', true, '#!')
     router
@@ -58,10 +57,6 @@ class AthenaRouterOutlet extends LitElement {
     router.resolve()
   }
 
-  disconnectedCallBack() { // on element Destroy
-    this.client.destroy(); // kill client
-    super.disconnectedCallBack()
-  }
 
   render() {
     return html`

@@ -14,6 +14,58 @@ class HomePage extends LitElement {
     document.location = '#!/events';
   }
 
+  static get properties() {
+    return {
+      route: { type: Object },
+      client: { type: Object },
+      clientIsConnected: { type: Boolean },
+      id: { type: Object }, // id can be between 0-999  
+      latestAnime: { type: Object }
+
+    }
+  }
+
+  connectedCallback() {
+    this.id = Math.floor(Math.random() * Math.floor(999));
+    console.log(`Connecting to socket as: ${this.id}`)
+
+    this.client = new WebSocket("ws://83.163.109.161:8080"); //wss://echo.websocket.org
+    this.client.onopen = () => {
+      this.clientIsConnected = true;
+      console.log('connected to socket at:', this.client.url)
+
+      this.getLatestAnime();
+      super.connectedCallback();
+    }
+
+
+    this.client.onmessage = (event) => {
+      const msg = JSON.parse(event.data)
+      console.log('RECEIVED: ', msg);
+
+      if (msg.status == 200) {
+
+        if (msg.category == 'anime') {
+          if (msg.type == 'latest') {
+            this.latestAnime = msg.data;
+          }
+        }
+
+      } else { //not status 200
+        console.log('Got message without code 200', msg);
+      }
+    };
+  }
+
+  disconnectedCallBack() { // on element Destroy
+    this.client.destroy(); // kill client
+    super.disconnectedCallBack()
+  }
+
+  getLatestAnime() {
+    this.client.send(JSON.stringify({ category: "anime", type: "latest" }))
+  }
+
   render() {
     return html`
     <div class="home">
@@ -26,10 +78,11 @@ class HomePage extends LitElement {
             CPU: 62%  | RAM: 74%  |  GREEN
           </div>
         </div>
-        <div class="card full anime"  @click="${this.goToAnime}">
-        <div class="title">Anime</div>
+        <div class="card full anime" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url('${this.latestAnime.art.banner}');"  @click="${this.goToAnime}">
+        <div class="title">Latest Anime</div>
           <div class="info">
-            Newest release: Shagugan No Shana S3 E1 | D
+            ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
           </div>
         </div>
         <div class="card half weather">
