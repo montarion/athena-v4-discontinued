@@ -48,14 +48,19 @@ class HomePage extends LitElement {
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
         });
-        
+
     }).catch(error => { // errors with socket connection end up here
       console.log(error);
     });
   }
 
+  setPageHandler() {
+    networking.setPageCallbackHandler((e) => { console.log("RECEIVED EVENT FROM SERVER-SIDE:", e) });
+  }
+
   constructor() {
     super();
+    this.setPageHandler();
     this.getLatestAnime();
   }
 

@@ -5,7 +5,6 @@ import {
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 import Navigo from 'https://unpkg.com/navigo@7.1.2/lib/navigo.es.js'
 
-import networking from '../networking.js';
 console.log('%c Athena: Hello', 'background-color: black; color: red;')
 
 class AthenaRouterOutlet extends LitElement {
