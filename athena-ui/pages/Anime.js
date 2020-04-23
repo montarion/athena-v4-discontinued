@@ -4,6 +4,8 @@ import {
     css
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 
+import networking from '../networking.js';
+
 class AnimePage extends LitElement {
 
     static get properties() {
@@ -19,40 +21,7 @@ class AnimePage extends LitElement {
     }
 
     connectedCallback() {
-        this.id = Math.floor(Math.random() * Math.floor(999));
-        console.log(`Connecting to socket as: ${this.id}`)
-
-        this.client = new WebSocket("ws://83.163.109.161:8080"); //wss://echo.websocket.org
-        this.client.onopen = () => {
-            this.clientIsConnected = true;
-            console.log('connected to socket at:', this.client.url)
-
-            this.getLatestAnime();
-            this.getAnimeList();
-            super.connectedCallback();
-        }
-
-
-        this.client.onmessage = (event) => {
-            const msg = JSON.parse(event.data)
-            console.log('RECEIVED: ', msg);
-
-            if (msg.status == 200) {
-
-                if (msg.category == 'anime') {
-                    if (msg.type == 'latest') {
-                        this.latestAnime = msg.data;
-                    }
-
-                    if (msg.type == 'list') {
-                        this.animeList = msg.data.list;
-                    }
-                }
-
-            } else { //not status 200
-                console.log('Got message without code 200', msg);
-            }
-        };
+        super.connectedCallback();
     }
 
     disconnectedCallBack() { // on element Destroy
@@ -65,7 +34,34 @@ class AnimePage extends LitElement {
     }
 
     getAnimeList() {
-        this.client.send(JSON.stringify({ category: "anime", type: "list" }))
+        // networking.js
+
+        // keep correct reference 
+        var self = this;
+
+        // as soon as socket is returned, lets send a request
+        networking.connect().then(ws => {
+
+            //pass the opened connection to the function, the request and the callback 
+            networking.sendmessage(ws, { category: "anime", type: "list" },
+                function (animeList) { // pass the callback function
+                    self.animeList = animeList.data.list; //set latestAnime in Home.js
+                });
+
+        }).catch(error => { // errors with socket connection end up here
+            console.log(error);
+        });
+    }
+
+
+    setPageHandler() {
+        networking.setPageCallbackHandler((e) => { console.log("RECEIVED EVENT FROM SERVER-SIDE:", e) });
+    }
+
+    constructor() {
+        super();
+        this.setPageHandler();
+        this.getAnimeList();
     }
 
 
@@ -76,12 +72,12 @@ class AnimePage extends LitElement {
                 <h1 class="title">Anime</h1>
                 <div class="content">
                     ${this.animeList.map(anime => {
-                        return html`
+            return html`
                         <div class="card">
                         ${anime}
                         </div>
                         `;
-                    })}
+        })}
                     <!-- <div class="card"></div>
                     <div class="card"></div>
 

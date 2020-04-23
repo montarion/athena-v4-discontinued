@@ -37,18 +37,18 @@ function connect() {
                 resolve(ws); // new socket is returned
             };
             ws.onmessage = function (e) {
-                console.log('RECEIVED:', e)
+                // console.log('RECEIVED:', e)
                 const message = JSON.parse(e.data);
                 try {
                     // if (e.data.type == "response") // if message is a response from server
                     if (message.status == 200) {
-                        console.log('custom handler')
+                        // console.log('custom handler')
                         callbackFunc(message)
                         callbackFunc = () => null;
                     }
                     // if (e.data.type == "event") { // if message is from server and not initiated by a request
                     if (message.status == 201) {
-                        console.log('page handler')
+                        // console.log('page handler')
                         pageCallbackHandler(message)
                     }
                 } catch {
