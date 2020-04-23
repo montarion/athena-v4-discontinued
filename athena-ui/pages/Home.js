@@ -20,7 +20,8 @@ class HomePage extends LitElement {
     return {
       route: { type: Object },
       client: { type: Object },
-      latestAnime: { type: Object }
+      latestAnime: { type: Object },
+      test: { type: Object }
     }
   }
 
@@ -38,18 +39,17 @@ class HomePage extends LitElement {
 
     // keep correct reference 
     var self = this;
-    // wait for socket to be connected
-    this.client = networking.connect()
 
-    // as soon as it is connected, lets send a request
-    this.client.then(ws => {
-      networking.sendmessage(ws, //pass the opened connection to the function
-        { category: "anime", type: "latest" },
+    // as soon as socket is returned, lets send a request
+    networking.connect().then(ws => {
+
+      //pass the opened connection to the function, the request and the callback 
+      networking.sendmessage(ws, { category: "anime", type: "latest" },
         function (latestAnime) { // pass the callback function
-          console.log(latestAnime)
-          self.latestAnime = latestAnime.data; // use self in stead of 'this' because 'this' is a different context in the callback
+          self.latestAnime = latestAnime.data; //set latestAnime in Home.js
         });
-    }).catch(error => { // errors end up here
+        
+    }).catch(error => { // errors with socket connection end up here
       console.log(error);
     });
   }
@@ -63,6 +63,7 @@ class HomePage extends LitElement {
     return html`
     <div class="home">
     <div class="main">
+      ${JSON.stringify(this.test)}
       <h1 class="site-title">Welcome to Athena</h1>
       <div class="content">
         <div class="card full system">

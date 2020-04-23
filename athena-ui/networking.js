@@ -19,20 +19,31 @@ function sendmessage(ws, message, callback) {
     }
 }
 
-function connect() {
-    console.info("socket is connecting...");
-    return new Promise(function (resolve, reject) {
-        const ws = new WebSocket("ws://83.163.109.161:8080/");
-        ws.onopen = function () {
-            resolve(ws);
-        };
-        ws.onmessage = function (e) {
-            callbackFunc(JSON.parse(e.data))
-        };
-        ws.onerror = function (err) {
-            reject(err);
-        };
 
+var ws = new WebSocket("ws://83.163.109.161:8080/");
+
+function connect() {
+
+    return new Promise(function (resolve, reject) {
+
+        if (ws.readyState != 1) {
+
+            console.info("socket is connecting...");
+            ws.onopen = function () {
+                console.info('socket is connected')
+                resolve(ws); // new socket is returned
+            };
+            ws.onmessage = function (e) {
+                callbackFunc(JSON.parse(e.data))
+            };
+            ws.onerror = function (err) {
+                reject(err);
+            };
+
+        } else {
+            console.info('socket was already connected')
+            resolve(ws); // existing socket is returned
+        }
     });
 }
 

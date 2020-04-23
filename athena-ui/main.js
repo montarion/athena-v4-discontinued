@@ -5,23 +5,19 @@ import {
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 import Navigo from 'https://unpkg.com/navigo@7.1.2/lib/navigo.es.js'
 
+import networking from '../networking.js';
 console.log('%c Athena: Hello', 'background-color: black; color: red;')
 
 class AthenaRouterOutlet extends LitElement {
   static get properties() {
     return {
       route: { type: Object },
-      // client: { type: Object },
-      // clientIsConnected: { type: Boolean },
-      // id: { type: Object }, // id can be between 0-999  
-      // latestAnime: { type: Object }
 
     }
   }
 
   constructor() {
     super()
-
     // const test = JSON.stringify({ category: "anime", type: "latest" });
     // const test2 = JSON.stringify({ category: "anime", type: "list" });
     // const test3 = JSON.stringify({ category: "anime", type: "showinfo", data: { show: "One Piece" } });
@@ -55,6 +51,7 @@ class AthenaRouterOutlet extends LitElement {
         `
       })
     router.resolve()
+
   }
 
 
