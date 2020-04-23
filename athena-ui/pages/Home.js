@@ -4,6 +4,8 @@ import {
   css
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 
+import networking from '../networking.js';
+
 class HomePage extends LitElement {
 
   goToAnime() {
@@ -18,43 +20,12 @@ class HomePage extends LitElement {
     return {
       route: { type: Object },
       client: { type: Object },
-      clientIsConnected: { type: Boolean },
-      id: { type: Object }, // id can be between 0-999  
       latestAnime: { type: Object }
-
     }
   }
 
   connectedCallback() {
-    this.id = Math.floor(Math.random() * Math.floor(999));
-    console.log(`Connecting to socket as: ${this.id}`)
-
-    this.client = new WebSocket("ws://83.163.109.161:8080"); //wss://echo.websocket.org
-    this.client.onopen = () => {
-      this.clientIsConnected = true;
-      console.log('connected to socket at:', this.client.url)
-
-      this.getLatestAnime();
-      super.connectedCallback();
-    }
-
-
-    this.client.onmessage = (event) => {
-      const msg = JSON.parse(event.data)
-      console.log('RECEIVED: ', msg);
-
-      if (msg.status == 200) {
-
-        if (msg.category == 'anime') {
-          if (msg.type == 'latest') {
-            this.latestAnime = msg.data;
-          }
-        }
-
-      } else { //not status 200
-        console.log('Got message without code 200', msg);
-      }
-    };
+    super.connectedCallback();
   }
 
   disconnectedCallBack() { // on element Destroy
@@ -63,7 +34,29 @@ class HomePage extends LitElement {
   }
 
   getLatestAnime() {
-    this.client.send(JSON.stringify({ category: "anime", type: "latest" }))
+    // networking.js
+
+    // keep correct reference 
+    var self = this;
+    // wait for socket to be connected
+    this.client = networking.connect()
+
+    // as soon as it is connected, lets send a request
+    this.client.then(ws => {
+      networking.sendmessage(ws, //pass the opened connection to the function
+        { category: "anime", type: "latest" },
+        function (latestAnime) { // pass the callback function
+          console.log(latestAnime)
+          self.latestAnime = latestAnime.data; // use self in stead of 'this' because 'this' is a different context in the callback
+        });
+    }).catch(error => { // errors end up here
+      console.log(error);
+    });
+  }
+
+  constructor() {
+    super();
+    this.getLatestAnime();
   }
 
   render() {
