@@ -30,7 +30,6 @@ class HomePage extends LitElement {
     this.setPageHandler();
     this.getLatestAnime();
     // setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
-    // this.throwEventTest();
   }
 
   disconnectedCallBack() { // on element Destroy
@@ -48,7 +47,7 @@ class HomePage extends LitElement {
     networking.connect().then(ws => {
 
       //pass the opened connection to the function, the request and the callback 
-      networking.sendmessage(ws, { category: "anime", type: "latest" },
+      networking.sendmessage(ws, { category: "anime", type: "latest", metadata: {} },
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
         });
@@ -60,15 +59,11 @@ class HomePage extends LitElement {
 
   setPageHandler() {
     networking.setPageCallbackHandler((e) => {
-      console.log("HOME-PAGE RECEIVED EVENT FROM SERVER:", e)
+      // console.log("HOME-PAGE HANDLING:", e)
       // if(e.type=="new-latest-anime") { do stuff with event }
       // if(e.type=="new-weather-forecast") { do stuff with event }
       //etc.
     });
-  }
-
-  throwEventTest() {
-    networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" }))
   }
 
   constructor() {

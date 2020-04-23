@@ -1,7 +1,16 @@
 // networking
 var ws = new WebSocket("ws://83.163.109.161:8080/");
-var callbackFunc = undefined; // function specific onmessage-handler for responses of requests
+// var callbackFunc = undefined; // function specific onmessage-handler for responses of requests
 var pageCallbackHandler = undefined; // page specific onmessage-handler for messages received from server
+
+var requests = [];
+
+function Guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 function sendmsg(ws, category, type, data = {}, metadata = {}, callback) {
     callbackFunc = callback;
@@ -13,13 +22,16 @@ function sendmsg(ws, category, type, data = {}, metadata = {}, callback) {
 };
 
 function sendmessage(ws, message, callback) {
-    if (callback == undefined) { }
-    else {
-        callbackFunc = callback;
-    }
+    // if (callback == undefined) { }
+    // else {
+    //     callbackFunc = callback;
+    // }
 
     try {
-        console.log('sending', message)
+        const guid = Guid();
+        message.metadata.guid = guid;
+        requests[guid] = callback != undefined ? callback : null;
+        console.log('sending:', message.metadata.guid)
         ws.send(JSON.stringify(message))
     } catch {
         console.error('socket is not yet ready!')
@@ -42,24 +54,20 @@ function connect() {
                 resolve(ws); // new socket is returned
             };
             ws.onmessage = function (e) {
-                console.log(e)
                 const message = JSON.parse(e.data);
+                // console.log('received:', message)
+                console.log('received:', message.metadata.guid)
                 try {
                     if (message.status == 200) { // OP RESPONSE DOE API-LIKE CALL
-                        console.log('response:', message)
-
-                        if (callbackFunc != undefined) {
-                            callbackFunc(message)
-                            callbackFunc = undefined;
+                        console.log(requests)
+                        if (requests[message.metadata.guid] != null) {
+                            // console.log('response:', message.metadata.guid)
+                            requests[message.metadata.guid](message);
+                            delete requests[message.metadata.guid];
                         } else {
-                            console.log('there was no handler set')
-                            // there was no callback set
+                            // console.log('there was no request handler set for Guid:', message.metadata.guid);
+                            pageCallbackHandler(message);
                         }
-                    }
-                    if (message.status != 200) { // OP EVENT DOE LOCAL STORAGE UPDATE EN/OF EVENTPAGE UPDATE
-                        // console.log('page handler')
-                        console.log('event:', message)
-                        pageCallbackHandler(message)
                     }
                 } catch {
                     console.error('Something went wrong')
