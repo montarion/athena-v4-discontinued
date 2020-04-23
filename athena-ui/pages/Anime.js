@@ -41,10 +41,9 @@ class AnimePage extends LitElement {
         networking.connect().then(ws => {
 
             //pass the opened connection to the function, the request and the callback 
-            networking.sendmessage(ws, { category: "anime", type: "list" },
+            networking.sendmessage({ category: "anime", type: "list" },
                 (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
-                    console.log(self.animeList)
                 });
 
         }).catch(error => { // errors with socket connection end up here

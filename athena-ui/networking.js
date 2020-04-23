@@ -1,9 +1,7 @@
 // networking
 var ws = new WebSocket("ws://83.163.109.161:8080/");
-// var callbackFunc = undefined; // function specific onmessage-handler for responses of requests
 var pageCallbackHandler = undefined; // page specific onmessage-handler for messages received from server
-
-var requests = [];
+var requests = []; // array to register callback functions by their GUID
 
 function Guid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -12,21 +10,16 @@ function Guid() {
     });
 }
 
-function sendmsg(ws, category, type, data = {}, metadata = {}, callback) {
+function sendmsg(category, type, data = {}, metadata = {}, callback) {
     callbackFunc = callback;
     try {
         ws.send(JSON.stringify({ "category": category, "type": type, "data": data, "metadata": metadata }))
     } catch {
-        console.error('socket is not yet ready!')
+        console.error('socket is not yet ready! Did you use connect()?')
     }
 };
 
-function sendmessage(ws, message, callback) {
-    // if (callback == undefined) { }
-    // else {
-    //     callbackFunc = callback;
-    // }
-
+function sendmessage(message, callback) {
     if (message.metadata == undefined) {
         message.metadata = {}
     }
@@ -38,8 +31,7 @@ function sendmessage(ws, message, callback) {
         console.log('sending:', message.metadata.guid)
         ws.send(JSON.stringify(message))
     } catch (error) {
-        console.error(error)
-        console.error('socket is not yet ready!')
+        console.error('socket is not yet ready! Did you use connect()?')
         console.error('readyState:', ws.readyState)
     }
 }

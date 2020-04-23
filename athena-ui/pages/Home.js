@@ -47,7 +47,7 @@ class HomePage extends LitElement {
     networking.connect().then(ws => {
 
       //pass the opened connection to the function, the request and the callback 
-      networking.sendmessage(ws, { category: "anime", type: "latest" },
+      networking.sendmessage({ category: "anime", type: "latest" },
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
         });
