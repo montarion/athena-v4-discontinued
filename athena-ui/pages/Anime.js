@@ -55,7 +55,7 @@ class AnimePage extends LitElement {
 
 
     setPageHandler() {
-        networking.setPageCallbackHandler((e) => { console.log("RECEIVED EVENT FROM SERVER-SIDE:", e) });
+        networking.setPageCallbackHandler((e) => { console.log("ANIME-PAGE RECEIVED EVENT FROM SERVER:", e) });
     }
 
     constructor() {
