@@ -51,7 +51,7 @@ function connect() {
                     // if (e.data.type == "event") { // if message is from server and not initiated by a request
                     if (JSON.parse(e.data).status == 201) {
                         console.log('page handler')
-                        pageCallbackHandler(JSON.parse(e))
+                        pageCallbackHandler(JSON.parse(e.data))
                     }
                 } catch {
                     console.error('Something went wrong')
