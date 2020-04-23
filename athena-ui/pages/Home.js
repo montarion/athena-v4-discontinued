@@ -27,6 +27,10 @@ class HomePage extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.setPageHandler();
+    this.getLatestAnime();
+    // setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
+    // this.throwEventTest();
   }
 
   disconnectedCallBack() { // on element Destroy
@@ -63,13 +67,16 @@ class HomePage extends LitElement {
     });
   }
 
+  throwEventTest() {
+    networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" }))
+  }
+
   constructor() {
     super();
-    this.setPageHandler();
-    this.getLatestAnime();
   }
 
   render() {
+
     return html`
     <div class="home">
     <div class="main">

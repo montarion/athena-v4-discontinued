@@ -44,7 +44,7 @@ class AnimePage extends LitElement {
 
             //pass the opened connection to the function, the request and the callback 
             networking.sendmessage(ws, { category: "anime", type: "list" },
-                function (animeList) { // pass the callback function
+                (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
                 });
 
@@ -65,7 +65,12 @@ class AnimePage extends LitElement {
     constructor() {
         super();
         this.setPageHandler();
-        this.getAnimeList();
+        networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" }))
+        // this.getAnimeList();
+
+        var self = this;
+        networking.connect().then(ws => networking.sendmessage(ws, {category: "anime", type: "latest"}, 
+        (res) => self.latestAnime = res.data))
     }
 
 
