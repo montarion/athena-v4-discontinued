@@ -27,14 +27,20 @@ function sendmessage(ws, message, callback) {
     //     callbackFunc = callback;
     // }
 
+    if (message.metadata == undefined) {
+        message.metadata = {}
+    }
+
     try {
         const guid = Guid();
         message.metadata.guid = guid;
         requests[guid] = callback != undefined ? callback : null;
         console.log('sending:', message.metadata.guid)
         ws.send(JSON.stringify(message))
-    } catch {
+    } catch (error) {
+        console.error(error)
         console.error('socket is not yet ready!')
+        console.error('readyState:', ws.readyState)
     }
 }
 
@@ -55,17 +61,15 @@ function connect() {
             };
             ws.onmessage = function (e) {
                 const message = JSON.parse(e.data);
-                // console.log('received:', message)
-                console.log('received:', message.metadata.guid)
                 try {
                     if (message.status == 200) { // OP RESPONSE DOE API-LIKE CALL
                         console.log(requests)
                         if (requests[message.metadata.guid] != null) {
-                            // console.log('response:', message.metadata.guid)
+                            console.log('response:', message.metadata.guid)
                             requests[message.metadata.guid](message);
                             delete requests[message.metadata.guid];
                         } else {
-                            // console.log('there was no request handler set for Guid:', message.metadata.guid);
+                            console.log('there was no request handler set for Guid:', message.metadata.guid);
                             pageCallbackHandler(message);
                         }
                     }

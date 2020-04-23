@@ -47,7 +47,7 @@ class HomePage extends LitElement {
     networking.connect().then(ws => {
 
       //pass the opened connection to the function, the request and the callback 
-      networking.sendmessage(ws, { category: "anime", type: "latest", metadata: {} },
+      networking.sendmessage(ws, { category: "anime", type: "latest" },
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
         });
@@ -59,7 +59,7 @@ class HomePage extends LitElement {
 
   setPageHandler() {
     networking.setPageCallbackHandler((e) => {
-      // console.log("HOME-PAGE HANDLING:", e)
+      console.log("HOME-PAGE HANDLING:", e)
       // if(e.type=="new-latest-anime") { do stuff with event }
       // if(e.type=="new-weather-forecast") { do stuff with event }
       //etc.

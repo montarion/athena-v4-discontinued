@@ -22,15 +22,13 @@ class AnimePage extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
+        this.setPageHandler();
+        this.getAnimeList();
     }
 
     disconnectedCallBack() { // on element Destroy
         this.client.destroy(); // kill client
         super.disconnectedCallBack()
-    }
-
-    getLatestAnime() {
-        this.client.send(JSON.stringify({ category: "anime", type: "latest" }))
     }
 
     getAnimeList() {
@@ -46,6 +44,7 @@ class AnimePage extends LitElement {
             networking.sendmessage(ws, { category: "anime", type: "list" },
                 (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
+                    console.log(self.animeList)
                 });
 
         }).catch(error => { // errors with socket connection end up here
@@ -54,8 +53,8 @@ class AnimePage extends LitElement {
     }
 
     setPageHandler() {
-        networking.setPageCallbackHandler((e) => { 
-            console.log("ANIME-PAGE RECEIVED EVENT FROM SERVER:", e) 
+        networking.setPageCallbackHandler((e) => {
+            console.log("ANIME-PAGE RECEIVED EVENT FROM SERVER:", e)
             // if(e.type=="anime-added-to-list") {do stuff with event}
             // if(e.type=="new-latest-anime") { do stuff with event}
             //etc.
@@ -64,13 +63,6 @@ class AnimePage extends LitElement {
 
     constructor() {
         super();
-        this.setPageHandler();
-        networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" }))
-        // this.getAnimeList();
-
-        var self = this;
-        networking.connect().then(ws => networking.sendmessage(ws, {category: "anime", type: "latest"}, 
-        (res) => self.latestAnime = res.data))
     }
 
 
