@@ -53,9 +53,13 @@ class AnimePage extends LitElement {
         });
     }
 
-
     setPageHandler() {
-        networking.setPageCallbackHandler((e) => { console.log("ANIME-PAGE RECEIVED EVENT FROM SERVER:", e) });
+        networking.setPageCallbackHandler((e) => { 
+            console.log("ANIME-PAGE RECEIVED EVENT FROM SERVER:", e) 
+            // if(e.type=="anime-added-to-list") {do stuff with event}
+            // if(e.type=="new-latest-anime") { do stuff with event}
+            //etc.
+        });
     }
 
     constructor() {
