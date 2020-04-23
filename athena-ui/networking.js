@@ -21,12 +21,9 @@ function sendmessage(ws, message, callback) {
     }
 }
 
-
 function setPageCallbackHandler(callback) {
     pageCallbackHandler = callback;
 }
-
-
 
 function connect() {
 
@@ -41,17 +38,18 @@ function connect() {
             };
             ws.onmessage = function (e) {
                 console.log('RECEIVED:', e)
+                const message = JSON.parse(e.data);
                 try {
                     // if (e.data.type == "response") // if message is a response from server
-                    if (JSON.parse(e.data).status == 200) {
+                    if (message.status == 200) {
                         console.log('custom handler')
-                        callbackFunc(JSON.parse(e.data))
+                        callbackFunc(message)
                         callbackFunc = () => null;
                     }
                     // if (e.data.type == "event") { // if message is from server and not initiated by a request
-                    if (JSON.parse(e.data).status == 201) {
+                    if (message.status == 201) {
                         console.log('page handler')
-                        pageCallbackHandler(JSON.parse(e.data))
+                        pageCallbackHandler(message)
                     }
                 } catch {
                     console.error('Something went wrong')
