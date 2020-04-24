@@ -111,9 +111,7 @@ class HomePage extends LitElement {
   static get styles() {
     return css`
 
-    .card:hover {
-      box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.6);
-    }
+
 
     .title, site-title { 
       padding-top: 0.3rem;
@@ -153,6 +151,11 @@ class HomePage extends LitElement {
       align-items: flex-start;
       
       box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
+      transition: box-shadow 0.5s ease-in-out;
+  }
+
+  .card:hover {
+    box-shadow: 0 1rem 1.5rem 0 rgba(0,0,0,0.8);
   }
 
   .system {
