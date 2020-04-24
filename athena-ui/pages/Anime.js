@@ -79,8 +79,17 @@ class AnimePage extends LitElement {
             return html`
                         <div class="card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
                         url('${anime.art.cover}'); background-size: cover">
-                        ${anime.title}<br> Latest episode: ${anime.lastep} <br>
-                        Aired on: ${new Date(anime.aired_at * 1000).toUTCString()} // more shows will be getting it
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <p>
+                                    ${anime.title}
+                                </p>
+                                <p>
+                                    Latest episode: ${anime.lastep}
+                                </p>
+                                <p>
+                                    Aired on: ${new Date(anime.aired_at * 1000).toUTCString()}
+                                </p> <!-- more shows will be getting it -->
+                            </div>
                         </div>
                         `;
         })}

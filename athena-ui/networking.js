@@ -20,9 +20,7 @@ function sendmsg(category, type, data = {}, metadata = {}, callback) {
 };
 
 function sendmessage(message, callback) {
-    if (message.metadata == undefined) {
-        message.metadata = {}
-    }
+    if (message.metadata == undefined) { message.metadata = {} }
 
     try {
         const guid = Guid();
@@ -43,9 +41,7 @@ function setPageCallbackHandler(callback) {
 function connect() {
 
     return new Promise(function (resolve, reject) {
-
         if (ws.readyState != 1) {
-
             console.info("socket is connecting...");
             ws.onopen = function () {
                 console.info('socket is connected')
