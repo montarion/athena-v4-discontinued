@@ -73,8 +73,24 @@ class AnimePage extends LitElement {
         return html`
         <div class= "anime">
             <div class="main">
-                <h1 class="title">Anime</h1>
+                <!-- <h1 class="title">Anime</h1> -->
                 <div class="content">
+                <div class="card" style="margin-top: 0; padding-top: 0; margin-bottom: 3em;">
+                Selected-Anime
+                </div>
+                <div class="horizontal-list"> 
+                    ${this.animeList.map(anime => {
+            return html`
+                        <div class="small-card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${anime.art.cover}'); background-size: cover">
+                            <div class="small-card-content">
+                                    ${anime.title}
+                            </div>
+                        </div>
+                        `;
+        })}
+                    </div>
+
+                    <!-- Display "selectedAnime"-single-card instead of this cards-list -->
                     ${this.animeList.map(anime => {
             return html`
                         <div class="card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
@@ -93,11 +109,8 @@ class AnimePage extends LitElement {
                         </div>
                         `;
         })}
-                    <!-- <div class="card"></div>
-                    <div class="card"></div>
 
-                    <div class="card"></div>
-                    <div class="card"></div> -->
+
                 </div>
             </div>
         </div>
@@ -105,6 +118,34 @@ class AnimePage extends LitElement {
     }
     static get styles() {
         return css`
+        .horizontal-list {
+            overflow: auto;
+            white-space: nowrap;
+            margin-left: 3em;
+        }
+
+        .small-card {
+            display: inline-block;
+            background-color: white;
+            border-radius: 2em;
+            
+            min-width: 20em;
+            max-width: 20em;
+            min-height: 15em;
+            margin-right: 1em;
+            margin-bottom: 1em;
+            // word-break: break-all;
+
+            color: white;
+            font-size: 12px;
+
+            box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
+        }
+
+        .small-card-content {
+            padding-top: 2em;
+        }
+
         .card {
             background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
             background-color: white;
