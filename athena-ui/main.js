@@ -42,6 +42,11 @@ class AthenaRouterOutlet extends LitElement {
         <events-page></events-page>
         `
       })
+      .on('anime/:name', (params) => {
+        this.route = html`
+        <anime-detail-page animeName="${params.name}"></anime-detail-page>
+        `
+      })
       //should be the last 'catch'
       .on('*', () => {
         console.log('routing wildcard')
