@@ -1,4 +1,4 @@
-import os, requests, json, redis, feedparser, re
+import os, requests, json, redis, feedparser, re, time
 
 from components.logger import logger as mainlogger
 from components.settings import settings
@@ -56,6 +56,7 @@ class anime:
                 self.maindict[show]["lastep"] = episode
                 if self.animedict.get("lastshow", "show") != show:
                     self.download(show, link)
+                    self.maindict[show]["aired_at"] = time.time()
                 if self.firstshow:
                     self.firstshow = False
                     settings().setsettings("anime", "lastshow", show)
