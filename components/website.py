@@ -39,22 +39,24 @@ class website:
             data = message.get("data", {}) # optional
             metadata = message.get("metadata", {}) # optional
 
+            self.logger(metadata, "info", "blue")
             if "guid" not in metadata: # for tracking purposes
                 metadata["guid"] = self.createGUID()
                 self.logger("added guid!")
             
+                
             if category == "test":
                 if type == "failure":
-                    finaldict = {"status": 406, "message":"Failure is not acceptable"}
+                    finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
                     self.sendmsg(ws, finaldict)
 
                 if type == "long":
-                    finaldict = {"status": 200, "message":"Pfft that took a while.."}
+                    finaldict = {"status": 200, "category": category, "type": type, "data":{"message":"Pfft that took a while.."}}
                     sleep(5)
                     self.sendmsg(ws, finaldict)
 
                 if type == "short":
-                    finaldict = {"status": 200, "message":"That was quick!"}
+                    finaldict = {"status": 200, "category": category, "type": type, "data":{"message":"That was quick!"}}
                     self.sendmsg(ws, finaldict)
 
             if category == "anime":
@@ -63,48 +65,55 @@ class website:
                     helpdata = data["method"] or None
                     if helpdata == None:
                         message = "Please try inserting one of the methods as data, like: data:{\"method\":\"list\"}"
-                        finaldict = {"status": 200, "methods": methods, "message":message}
+                        finaldict = {"status": 200, "methods": methods, "message":message, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
                     elif helpdata == "list":
                         message = "TODO implement help message"
-                        finaldict = {"status": 200, "message":message}
+                        finaldict = {"status": 200, "message":message, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
                     elif helpdata == "latest":
                         message = "TODO implement help message"
-                        finaldict = {"status": 200, "message":message}
+                        finaldict = {"status": 200, "message":message, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
                     elif helpdata == "showinfo":
                         message = "TODO implement help message"
-                        finaldict = {"status": 200, "message":message}
+                        finaldict = {"status": 200, "message":message, "metadata":metadata}
                         self.sendmsg(json.dumps(finaldict))
 
                 if type == "list":
-                    preanilist = settings().getsettings("anime", "list")
-                    if preanilist["status"] == 200:
-                        anilist = preanilist["resource"]
-                        finaldict = {"status": 200, "category": category, "type": type, "data":{"list":anilist}}
+                    prenamelist = settings().getsettings("anime", "list")
+                    preanimedict = settings().getsettings("anime", "maindict")
+                    if prenamelist["status"] == 200:
+                        anilist = []
+                        namelist = prenamelist["resource"]
+                        maindict = preanimedict["resource"]
+                        for name in namelist:
+                            if name in maindict:
+                                entry = maindict[name]
+                                entry["title"] = name
+                                anilist.append(entry)
+                        finaldict = {"status": 200, "category": category, "type": type, "data":{"list":anilist}, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
                         finaldict = {"status": 406, "message":"Failure is not acceptable"}
                         self.sendmsg(ws, finaldict)
 
                     else:
-                        finaldict = {"status": 500, "category": category, "type": type}
+                        finaldict = {"status": 500, "category": category, "type": type, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
 
                 if type == "latest":
                     preanidict = settings().getsettings("anime") # get full anime dict
                     if preanidict["status"] == 200:
 
-                        
                         anidict = preanidict["resource"]
                         latestshow = anidict["lastshow"] # catch errors for these
                         anilist = anidict["list"]
                         maindict = anidict["maindict"]
                         showinfo = maindict[latestshow]
                         showinfo["title"] = latestshow
-                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo}
+                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata": metadata}
                         self.sendmsg(ws, finaldict)
-                        finaldict = {"status": 406, "message":"Failure is not acceptable"}
+                        finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
 
 
@@ -115,12 +124,12 @@ class website:
                         maindict = premaindict["resource"]
                         showinfo = maindict[targetshow] # might not exist
                         showinfo["title"] = targetshow
-                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo}
+                        finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
 
             if category == "weather":
                 # TODO remove when implemented
-                finaldict = {"status": 501, "category": category}
+                finaldict = {"status": 501, "category": category, "metadata":metadata}
                 self.sendmsg(ws, finaldict)
 
                 if type == "current": # require data to include location
@@ -129,12 +138,12 @@ class website:
 
             if category == "calendar":
                 # TODO remove when implemented
-                finaldict = {"status": 501, "category": category}
+                finaldict = {"status": 501, "category": category, "metadata":metadata}
                 self.sendmsg(ws, finaldict)
 
             if category == "monitor":
                 # TODO remove when implemented
-                finaldict = {"status": 501, "category": category}
+                finaldict = {"status": 501, "category": category, "metadata":metadata}
                 self.sendmsg(ws, finaldict)
 
 
