@@ -24,6 +24,8 @@ class AnimePage extends LitElement {
         super.connectedCallback();
         this.setPageHandler();
         this.getAnimeList();
+        var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
+
     }
 
     disconnectedCallBack() { // on element Destroy
@@ -44,6 +46,8 @@ class AnimePage extends LitElement {
             networking.sendmessage({ category: "anime", type: "list" },
                 (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
+                    console.log(self.animeList);
+                    console.log(self.animeList[0].aired_at);
                 });
 
         }).catch(error => { // errors with socket connection end up here
@@ -73,8 +77,10 @@ class AnimePage extends LitElement {
                 <div class="content">
                     ${this.animeList.map(anime => {
             return html`
-                        <div class="card">
-                        ${anime}
+                        <div class="card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+                        url('${anime.art.cover}'); background-size: cover">
+                        ${anime.title}<br> Latest episode: ${anime.lastep} <br>
+                        Aired on: ${new Date(anime.aired_at * 1000).toUTCString()} // more shows will be getting it
                         </div>
                         `;
         })}
@@ -91,8 +97,7 @@ class AnimePage extends LitElement {
     static get styles() {
         return css`
         .card {
-            background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
-                url(https://tokyo.nl/wp-content/uploads/2014/10/manga-tekeningen.jpg);
+            background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
             background-color: white;
             flex-basis: 40%;
             min-height: 15em;
@@ -106,6 +111,11 @@ class AnimePage extends LitElement {
 
             color: white;
             font-size: 26px;
+
+            box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
+          }
+          .card:hover {
+            box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.6);
           }
           
           .content {

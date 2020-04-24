@@ -112,7 +112,7 @@ class HomePage extends LitElement {
     return css`
 
     .card:hover {
-      color: #2CB2FF;
+      box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.6);
     }
 
     .title, site-title { 
@@ -151,6 +151,8 @@ class HomePage extends LitElement {
       flex-direction: column;
       justify-content: space-between;
       align-items: flex-start;
+      
+      box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
   }
 
   .system {
