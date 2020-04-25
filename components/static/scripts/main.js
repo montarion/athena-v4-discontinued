@@ -5,16 +5,26 @@ import {
 } from 'https://unpkg.com/lit-element@2.1.0/lit-element.js?module'
 import Navigo from 'https://unpkg.com/navigo@7.1.2/lib/navigo.es.js'
 
-console.log('%c Athena: Hello', 'background-color: black; color: blue;')
+console.log('%c Athena: Hello', 'background-color: black; color: red;')
 
 class AthenaRouterOutlet extends LitElement {
   static get properties() {
     return {
-      route: { type: Object }
+      route: { type: Object },
+
     }
   }
+
   constructor() {
     super()
+    // const test = JSON.stringify({ category: "anime", type: "latest" });
+    // const test2 = JSON.stringify({ category: "anime", type: "list" });
+    // const test3 = JSON.stringify({ category: "anime", type: "showinfo", data: { show: "One Piece" } });
+    // this.client.send(test);
+    // this.client.send(test2);
+    // this.client.send(test3);
+
+
     let router = new Navigo('/', true, '#!')
     router
       .on('home', () => {
@@ -27,9 +37,14 @@ class AthenaRouterOutlet extends LitElement {
         <anime-page></anime-page>
         `
       })
-      .on('motd', () => {
+      .on('events', () => {
         this.route = html`
-        <motd-page></motd-page>
+        <events-page></events-page>
+        `
+      })
+      .on('anime/:name', (params) => {
+        this.route = html`
+        <anime-detail-page animeName="${params.name}"></anime-detail-page>
         `
       })
       //should be the last 'catch'
@@ -40,7 +55,10 @@ class AthenaRouterOutlet extends LitElement {
         `
       })
     router.resolve()
+
   }
+
+
   render() {
     return html`
       <div>
@@ -50,4 +68,3 @@ class AthenaRouterOutlet extends LitElement {
   }
 }
 customElements.define('athena-router-outlet', AthenaRouterOutlet)
-
