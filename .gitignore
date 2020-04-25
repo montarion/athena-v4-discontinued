@@ -129,6 +129,12 @@ trackfiles
 settings.ini
 SETTINGS
 PUBLISH
+__pycache__
+trackfiles/*
+trackfiles
+settings.ini
+settings
+PUBLISH
 CHANGELOG
 TODO
 IDEAS
@@ -136,7 +142,6 @@ IDEAS
 credentials*
 token.pickle
 *.old
-*.bak
 debug.py
 productionenv/
 productionenv
@@ -144,4 +149,3 @@ credentials.json
 data/
 _pycache_
 output.txt
-

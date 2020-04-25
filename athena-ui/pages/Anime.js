@@ -125,6 +125,7 @@ class AnimePage extends LitElement {
     static get styles() {
         return css`
         .grid-container {
+            background-color: #101018;
             padding-left: 1em;
             display: grid;
             grid-auto-columns: repeat(auto-fill, 1fr);
@@ -137,9 +138,13 @@ class AnimePage extends LitElement {
             "latest latest";
           }
           
-        .latest { grid-area: latest; }
+        .latest { 
+            grid-area: latest; 
+            border: 3px solid #2cb2ff !important; 
+        }
 
         .card {
+            border: 1px solid #2cb2ff; 
             background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
             background-color: white;
             flex-basis: 40%;
@@ -163,10 +168,7 @@ class AnimePage extends LitElement {
           }
           
           .content {
-            // display: flex;
-            // flex-wrap: wrap;
-            // flex-grow: 1;
-            // justify-content: space-evenly;
+            
           }
           .title {
             color: white;

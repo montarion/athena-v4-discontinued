@@ -150,6 +150,7 @@ class HomePage extends LitElement {
       text-shadow: 1px 1px #000000;
     }
     .card {
+      border: 1px solid #2cb2ff; 
       min-height: 15em;
 
       display: flex;
