@@ -18,7 +18,10 @@ html {
 .nav-link .router-link-exact-active .router-link-active {}
 
 .vertical-menu {
-    position: relative;
+    /* position: relative; */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
     float: left;
     width: 20vw;
     color: white;

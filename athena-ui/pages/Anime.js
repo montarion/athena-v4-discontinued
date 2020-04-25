@@ -125,6 +125,7 @@ class AnimePage extends LitElement {
     static get styles() {
         return css`
         .grid-container {
+            background-color: #101018;
             padding-left: 1em;
             display: grid;
             grid-auto-columns: repeat(auto-fill, 1fr);
