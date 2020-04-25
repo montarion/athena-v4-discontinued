@@ -136,9 +136,12 @@ IDEAS
 credentials*
 token.pickle
 *.old
+*.bak
 debug.py
 productionenv/
 productionenv
 credentials.json
-settings.ini
+data/
 _pycache_
+output.txt
+
