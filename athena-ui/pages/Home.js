@@ -72,48 +72,65 @@ class HomePage extends LitElement {
 
   clickedLatestAnime(e) {
     document.location = '#!/anime/' + e.target.id;
-}
+  }
 
   render() {
 
     return html`
     <div class="home">
-    <div class="main">
-      ${JSON.stringify(this.test)}
-      <h1 class="site-title">Welcome to Athena</h1>
-      <div class="content">
-        <div class="card full system">
-          <div class="title">System Stats</div>
-          <div class="info">
-            CPU: 62%  | RAM: 74%  |  GREEN
+      <div class="main">
+        ${JSON.stringify(this.test)}
+        <h1 class="site-title">
+          Welcome to Athena
+        </h1>
+        <div class="content">
+          <div class="card system image">
+            <div class="title">System Stats</div>
+            <div class="info">
+              CPU: 62%  | RAM: 74%  |  GREEN
+            </div>
           </div>
-        </div>
-        <div  id="${this.latestAnime.title}" @click="${this.clickedLatestAnime}" class="card full anime" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
-        url('${this.latestAnime.art.banner}');">
-        <div id="${this.latestAnime.title}" class="title">Latest Anime</div>
-          <div id="${this.latestAnime.title}" class="info">
-            ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
+          <div  id="${this.latestAnime.title}" 
+          @click="${this.clickedLatestAnime}" 
+          class="card anime image" 
+          style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${this.latestAnime.art.banner}'); background-size: cover; background-position: center;">
+          <div id="${this.latestAnime.title}" class="title">Latest Anime</div>
+            <div id="${this.latestAnime.title}" class="info">
+              ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
+            </div>
           </div>
-        </div>
-        <div class="card half weather">
-        <div class="title">Weather</div>
-          <div class="info">
-           Dutch weather sucks anyways
+          <div class="bottom">
+          <div class="card weather image">
+                <div class="title">
+                  Weather
+                </div>
+                <div class="info">
+                  Dutch weather sucks anyways
+                </div>
           </div>
-        </div>
-        <div class="card half events" @click="${this.goToEvents}">
-        <div class="title">Upcoming Events</div>
-          <div class="info">
-           FortaRock 2020 \\m/
+          <div class="divider"></div>
+          <div class="card events image" @click="${this.goToEvents}">
+                <div class="title">
+                   Upcoming Events
+                </div>
+                <div class="info">
+                    FortaRock 2020 \\m/
+              </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+      </div>
+
+   </div>
   `;
   }
   static get styles() {
     return css`
+
+    .divider {
+      width: 4em;
+    }
+
     .title, site-title { 
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
@@ -132,24 +149,14 @@ class HomePage extends LitElement {
       background-color: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
       text-shadow: 1px 1px #000000;
     }
-
-    .full {
-      flex-basis: 90% !important;
-    }
-    .half {
-      margin-top: 3em !important;
-      flex-basis: 40% !important;
-    }
-
     .card {
-      min-height: 10em;
-      max-height: 10em;
-      border-radius: 10px;
-      margin-bottom: 1em;
+      min-height: 15em;
+
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: flex-start;
+      border-radius: 2em !important;
+      margin-bottom: 1em;
       
       box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
       transition: box-shadow 0.5s ease-in-out;
@@ -160,58 +167,30 @@ class HomePage extends LitElement {
   }
 
   .system {
-    /*I really want linear gradient to be part of .card... [TODO]*/ 
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
-    height: 10em; /* You must set a specified height */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover; /* Resize the background image to cover the entire container */
-
-    color: white;
   }
 
   .anime {
-    background-image: 
-        linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
-        url("https://tokyo.nl/wp-content/uploads/2014/10/manga-tekeningen.jpg");
-    height: 10em; /* You must set a specified height */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover; /* Resize the background image to cover the entire container */
-
-    color: white;
-
   }
 
   .weather {
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
-    height: 10em; /* You must set a specified height */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover; /* Resize the background image to cover the entire container */
-
-    color: white;
   }
 
   .events {
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
-    height: 10em; /* You must set a specified height */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover; /* Resize the background image to cover the entire container */
-
-    color: white;
   }
     
   .title {
     color: white;
   }
+
    .subtitle {
       margin: 0;
       padding: 0;
@@ -224,14 +203,22 @@ class HomePage extends LitElement {
       height: 100%;
       overflow: hidden;
       border-radius: inherit;
+      background-position: center; /* Center the image */
+      background-repeat: no-repeat; /* Do not repeat the image */
+      background-size: cover; /* Resize the background image to cover the entire container */
+      color: white;
   }
    
    .content {
+     padding-left: 1em;
       display: flex;
-      flex-wrap: wrap;
-      flex-grow: 1;
-      justify-content: space-evenly;
+      flex-direction: column;
   }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+  }
+
   }
 
       `;
