@@ -46,13 +46,7 @@ class AnimePage extends LitElement {
             networking.sendmessage({ category: "anime", type: "list" },
                 (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
-                    console.log(self.animeList);
-                    self.animeList.map(anime => console.log(anime.title, anime.aired_at))
-
                     self.animeList = self.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
-                    console.log('after:')
-                    self.animeList.map(anime => console.log(anime.title, anime.aired_at))
-
                 });
 
         }).catch(error => { // errors with socket connection end up here
