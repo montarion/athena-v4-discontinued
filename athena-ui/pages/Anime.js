@@ -46,8 +46,7 @@ class AnimePage extends LitElement {
             networking.sendmessage({ category: "anime", type: "list" },
                 (animeList) => { // pass the callback function
                     self.animeList = animeList.data.list; //set latestAnime in Home.js
-                    console.log(self.animeList);
-                    console.log(self.animeList[0].aired_at);
+                    self.animeList = self.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
                 });
 
         }).catch(error => { // errors with socket connection end up here
@@ -64,6 +63,10 @@ class AnimePage extends LitElement {
         });
     }
 
+    clickedAnimeCard(e) {
+        document.location = '#!/anime/' + e.target.id;
+    }
+
     constructor() {
         super();
     }
@@ -73,44 +76,47 @@ class AnimePage extends LitElement {
         return html`
         <div class= "anime">
             <div class="main">
-                <!-- <h1 class="title">Anime</h1> -->
                 <div class="content">
-                <div class="card" style="margin-top: 0; padding-top: 0; margin-bottom: 3em;">
-                Selected-Anime
+                <div class="grid-container">
+                
+                            <!-- Latest anime-->
+                <div class="latest card" @click="${this.clickedAnimeCard}" id="${this.animeList[0].title}"
+                            style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+                            url('${this.animeList[0].art.banner}');  background-size: cover; background-position: center;">
+                                <div style="display: flex; flex-direction: column; justify-content: center;" id="${this.animeList[0].title}">
+                                    <p id="${this.animeList[0].title}">
+                                        ${this.animeList[0].title}
+                                    </p>
+                                    <p id="${this.animeList[0].title}">
+                                        Latest episode: ${this.animeList[0].lastep}
+                                    </p>
+                                    <p id="${this.animeList[0].title}">
+                                        Aired on: ${new Date(this.animeList[0].aired_at * 1000).toUTCString()}
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Older anime's-->
+                     ${this.animeList.slice(1).map(anime => {
+            return html`
+                            <div class="older card" @click="${this.clickedAnimeCard}" id="${anime.title}"
+                            style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+                            url('${anime.art.cover}');  background-size: cover; background-position: center;">
+                                <div style="display: flex; flex-direction: column; justify-content: center;" id="${anime.title}">
+                                    <p id="${anime.title}">
+                                        ${anime.title}
+                                    </p>
+                                    <p id="${anime.title}">
+                                        Latest episode: ${anime.lastep}
+                                    </p>
+                                    <p id="${anime.title}">
+                                        Aired on: ${new Date(anime.aired_at * 1000).toUTCString()}
+                                    </p>
+                                </div>
+                            </div>
+                            `;
+        })}
                 </div>
-                <div class="horizontal-list"> 
-                    ${this.animeList.map(anime => {
-            return html`
-                        <div class="small-card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${anime.art.cover}'); background-size: cover">
-                            <div class="small-card-content">
-                                    ${anime.title}
-                            </div>
-                        </div>
-                        `;
-        })}
-                    </div>
-
-                    <!-- Display "selectedAnime"-single-card instead of this cards-list -->
-                    ${this.animeList.map(anime => {
-            return html`
-                        <div class="card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
-                        url('${anime.art.cover}'); background-size: cover">
-                            <div style="display: flex; flex-direction: column; justify-content: center;">
-                                <p>
-                                    ${anime.title}
-                                </p>
-                                <p>
-                                    Latest episode: ${anime.lastep}
-                                </p>
-                                <p>
-                                    Aired on: ${new Date(anime.aired_at * 1000).toUTCString()}
-                                </p> <!-- more shows will be getting it -->
-                            </div>
-                        </div>
-                        `;
-        })}
-
-
+                   
                 </div>
             </div>
         </div>
@@ -118,33 +124,20 @@ class AnimePage extends LitElement {
     }
     static get styles() {
         return css`
-        .horizontal-list {
-            overflow: auto;
-            white-space: nowrap;
-            margin-left: 3em;
-        }
-
-        .small-card {
-            display: inline-block;
-            background-color: white;
-            border-radius: 2em;
-            
-            min-width: 20em;
-            max-width: 20em;
-            min-height: 15em;
-            margin-right: 1em;
-            margin-bottom: 1em;
-            // word-break: break-all;
-
-            color: white;
-            font-size: 12px;
-
-            box-shadow: 0 1rem 2rem 0 rgba(0,0,0,0.3);
-        }
-
-        .small-card-content {
-            padding-top: 2em;
-        }
+        .grid-container {
+            padding-left: 1em;
+            display: grid;
+            grid-auto-columns: repeat(auto-fill, 1fr);
+            grid-auto-rows: repeat(4, 1fr);
+            gap: 1rem;
+            grid-template-areas: 
+            "latest latest" 
+            "latest latest" 
+            "latest latest" 
+            "latest latest";
+          }
+          
+        .latest { grid-area: latest; }
 
         .card {
             background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
@@ -152,7 +145,7 @@ class AnimePage extends LitElement {
             flex-basis: 40%;
             min-height: 15em;
             border-radius: 2em;
-            margin-top: 2em;
+            margin-top: 1em;
           
             display: flex;
             flex-direction: column;
@@ -170,10 +163,10 @@ class AnimePage extends LitElement {
           }
           
           .content {
-            display: flex;
-            flex-wrap: wrap;
-            flex-grow: 1;
-            justify-content: space-evenly;
+            // display: flex;
+            // flex-wrap: wrap;
+            // flex-grow: 1;
+            // justify-content: space-evenly;
           }
           .title {
             color: white;
