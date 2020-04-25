@@ -19,7 +19,7 @@ class AnimeDetailPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.setPageHandler();
-        this.animeList = [{title: "A"}, {title: "B"}, {title: "C"}, {title: "D"}, {title: "E"}, {title: "F"}, {title: "G"}];
+        this.animeList = [{ title: "A" }, { title: "B" }, { title: "C" }, { title: "D" }, { title: "E" }, { title: "F" }, { title: "G" }];
         this.loadAnime();
         var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
 
@@ -82,14 +82,14 @@ class AnimeDetailPage extends LitElement {
 
                     <div class="horizontal-list"> 
                     ${this.animeList.map(anime => {
-                    return html`
+            return html`
                             <div class="small-card" > 
                                 <div class="small-card-content">
                                     ${anime.title}
                             </div>
                         </div>
                         `;
-                })}
+        })}
                 </div>
     
     `;
@@ -97,10 +97,20 @@ class AnimeDetailPage extends LitElement {
     static get styles() {
         return css`
         .horizontal-list {
-            overflow: auto;
+            overflow-x: auto;
             white-space: nowrap;
             // margin-left: 3em;
-            margin-top: 3em;
+            margin-top: 2em;
+        }
+
+        ::-webkit-scrollbar{
+            height: 6px;
+            width: 6px;
+            background: gray;
+        }
+        ::-webkit-scrollbar-thumb:horizontal{
+            background: #2CB2FF;
+            border-radius: 10px;
         }
 
         .small-card {
@@ -131,7 +141,7 @@ class AnimeDetailPage extends LitElement {
             flex-basis: 15em;
             min-height: 15em;
             border-radius: 2em;
-            margin-top: 2em;
+            margin-top: 1em;
           
             display: flex;
             flex-direction: column;

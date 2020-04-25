@@ -65,19 +65,7 @@ class AnimePage extends LitElement {
     }
 
     clickedAnimeCard(e) {
-        console.log("clicked:", e.target.id)
-
         document.location = '#!/anime/' + e.target.id;
-        // networking.connect().then(_ => {
-        //     networking.sendmessage(
-        //         {
-        //             category: "anime",
-        //             type: "showinfo",
-        //             data: {
-        //                 show: e.target.id
-        //             }
-        //         }, (res) => console.log(res.data))
-        // })
     }
 
     constructor() {
@@ -91,7 +79,7 @@ class AnimePage extends LitElement {
             <div class="main">
                 <div class="content">
                     ${this.animeList.map(anime => {
-                        return html`
+            return html`
                             <div class="card" @click="${this.clickedAnimeCard}" id="${anime.title}"
                             style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
                             url('${anime.art.cover}');  background-size: cover; background-position: center;">
@@ -108,7 +96,7 @@ class AnimePage extends LitElement {
                                 </div>
                             </div>
                             `;
-                    })}
+        })}
                 </div>
             </div>
         </div>
@@ -116,8 +104,6 @@ class AnimePage extends LitElement {
     }
     static get styles() {
         return css`
-
-
         .card {
             background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
             background-color: white;

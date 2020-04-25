@@ -70,6 +70,10 @@ class HomePage extends LitElement {
     super();
   }
 
+  clickedLatestAnime(e) {
+    document.location = '#!/anime/' + e.target.id;
+}
+
   render() {
 
     return html`
@@ -84,10 +88,10 @@ class HomePage extends LitElement {
             CPU: 62%  | RAM: 74%  |  GREEN
           </div>
         </div>
-        <div class="card full anime" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
-        url('${this.latestAnime.art.banner}');"  @click="${this.goToAnime}">
-        <div class="title">Latest Anime</div>
-          <div class="info">
+        <div  id="${this.latestAnime.title}" @click="${this.clickedLatestAnime}" class="card full anime" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
+        url('${this.latestAnime.art.banner}');">
+        <div id="${this.latestAnime.title}" class="title">Latest Anime</div>
+          <div id="${this.latestAnime.title}" class="info">
             ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
           </div>
         </div>
@@ -110,9 +114,6 @@ class HomePage extends LitElement {
   }
   static get styles() {
     return css`
-
-
-
     .title, site-title { 
       padding-top: 0.3rem;
       padding-bottom: 0.3rem;
