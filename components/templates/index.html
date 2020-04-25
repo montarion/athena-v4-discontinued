@@ -6,11 +6,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
   <link rel="stylesheet" href={{ url_for('static',filename='css/style.css') }}>
   <script type="module" src={{ url_for('static',filename='scripts/main.js') }}></script>
-  <script type="text/javascript" src={{ url_for('static',filename='scripts/networking.js') }}></script>
+  <script type="module" src={{ url_for('static',filename='scripts/networking.js') }}></script>
 
   <script type="module">
     import "{{ url_for('static',filename='pages/Anime.js') }}";
-    import "{{ url_for('static',filename='pages/MOTD.js') }}";
+    import "{{ url_for('static',filename='pages/AnimeDetail.js') }}";
+    import "{{ url_for('static',filename='pages/Events.js') }}";
     import "{{ url_for('static',filename='pages/Home.js') }}";
   </script>
 </head>
