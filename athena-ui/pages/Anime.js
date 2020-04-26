@@ -125,7 +125,7 @@ class AnimePage extends LitElement {
           
         .latest { 
             grid-area: latest; 
-            border: 3px solid #2cb2ff !important; 
+            border: 3px solid #A646FF !important; 
         }
 
         .card {
