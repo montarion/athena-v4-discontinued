@@ -19,8 +19,8 @@ class AnimeDetailPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.setPageHandler();
-        this.getAnimeList();
         this.loadAnime();
+        this.getAnimeList();
 
         var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
     }
