@@ -26,6 +26,7 @@ function sendmessage(message, callback) {
         const guid = Guid();
         message.metadata.guid = guid;
         requests[guid] = callback != undefined ? callback : null;
+        console.log('just added a callback', requests)
         ws.send(JSON.stringify(message))
     } catch (error) {
         console.error('socket is not yet ready! Did you use connect()?')
@@ -47,9 +48,9 @@ function connect() {
             };
             ws.onmessage = function (e) {
                 const message = JSON.parse(e.data);
+                console.log('callbacks', requests);
                 try {
                     if (message.status == 200) { // OP RESPONSE DOE API-LIKE CALL
-                        console.log('callbacks', requests)
                         if (requests[message.metadata.guid] != null) {
                             requests[message.metadata.guid](message);
                             delete requests[message.metadata.guid];
@@ -58,11 +59,12 @@ function connect() {
                             pageCallbackHandler(message);
                         }
                     }
-                } catch {
-                    console.error('Something went wrong')
+                } catch (e) {
+                    console.error('Something went wrong in the callback', e)
                 }
             };
             ws.onerror = function (err) {
+                console.error('Socket connection errored')
                 reject(err);
             };
 
