@@ -70,6 +70,7 @@ function connect() {
 
         } else {
             console.info('socket was already connected')
+            console.info('socket is connected')
             resolve(ws); // existing socket is returned
         }
     });

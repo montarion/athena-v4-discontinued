@@ -68,6 +68,10 @@ class AnimeDetailPage extends LitElement {
         document.location = '#!/anime/' + e.target.id;
         this.animeName = e.target.id;
         console.log('clicked', e.target.id)
+        
+        networking.connect().then(_ => {
+            this.loadAnime();
+        })
     }
 
     constructor() {
