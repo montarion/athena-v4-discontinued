@@ -68,6 +68,8 @@ class AnimeDetailPage extends LitElement {
 
     clickedAnimeCard(e) {
         document.location = '#!/anime/' + e.target.id;
+        this.animeName = e.target.id;
+        console.log('clicked', e.target.id)
     }
 
     constructor() {
@@ -76,6 +78,7 @@ class AnimeDetailPage extends LitElement {
 
 
     render() {
+        console.log(this.animeList)
         return html`
         <div class= "anime">
             <div class="main">
