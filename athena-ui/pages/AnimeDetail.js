@@ -19,14 +19,13 @@ class AnimeDetailPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.setPageHandler();
-        this.animeList = [{ title: "A" }, { title: "B" }, { title: "C" }, { title: "D" }, { title: "E" }, { title: "F" }, { title: "G" }];
+        this.getAnimeList();
         this.loadAnime();
-        var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
 
+        var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
     }
 
     disconnectedCallBack() { // on element Destroy
-        this.client.destroy(); // kill client
         super.disconnectedCallBack()
     }
 
@@ -41,9 +40,6 @@ class AnimeDetailPage extends LitElement {
 
     loadAnime() {
         var that = this;
-        var locationParts = window.location.href.split('/')
-        const animeName = locationParts[locationParts.length - 1];
-        console.log("Anime to load:", animeName)
         networking.connect().then(_ => {
             networking.sendmessage(
                 {
@@ -52,8 +48,26 @@ class AnimeDetailPage extends LitElement {
                     data: {
                         show: this.animeName
                     }
-                }, (res) => that.anime = res.data)
+                }, (res) => { that.anime = res.data; console.log('loading:', this.animeName)})
         })
+    }
+
+    getAnimeList() {
+        var that = this;
+        networking.connect().then(_ => {
+            networking.sendmessage({ category: "anime", type: "list" },
+                (animeList) => {
+                    that.animeList = animeList.data.list;
+                    that.animeList = that.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
+                });
+
+        }).catch(error => { // errors with socket connection end up here
+            console.log(error);
+        });
+    }
+
+    clickedAnimeCard(e) {
+        document.location = '#!/anime/' + e.target.id;
     }
 
     constructor() {
@@ -66,7 +80,9 @@ class AnimeDetailPage extends LitElement {
         <div class= "anime">
             <div class="main">
                 <div class="content">
-                    <div class="selected card" style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${this.anime.art.cover}'); background-size: cover; background-position: center;">
+                    <div class="selected card current" 
+                    style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${this.anime.art.banner}'); 
+                    background-size: cover; background-position: center;">
                         <div style="display: flex; flex-direction: column; justify-content: center;" id="${this.anime.title}">
                                 <p id="${this.anime.title}">
                                     ${this.anime.title}
@@ -81,21 +97,37 @@ class AnimeDetailPage extends LitElement {
                     </div> 
 
                     <div class="horizontal-list"> 
-                    ${this.animeList.map(anime => {
-            return html`
-                            <div class="small-card" > 
-                                <div class="small-card-content">
-                                    ${anime.title}
-                            </div>
-                        </div>
-                        `;
-        })}
+                  ${
+            this.animeList.map((anime, i) => {
+                return html`
+                         <div id="${anime.title}" @click="${this.clickedAnimeCard}" class="small-card ${i == 0 ? 'latest' : ''} ${anime.title == this.anime.title ? 'current' : ''}" 
+                             style="background-image: linear-gradient(to bottom, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${anime.art.cover}'); 
+                             background-size: cover; background-position: center;">
+                             <div id="${anime.title}" class="small-card-content">
+                                 ${anime.title}
+                             </div>
+                         </div>
+                         `;
+            })
+            }
                 </div>
     
     `;
     }
     static get styles() {
         return css`
+        .latest {
+            border: 2px solid #A646FF !important; 
+        }
+
+        .current {
+            border: 2px solid #2CB2FF !important; 
+        }
+
+        .unavailable {
+            border: 2px solid #CF5959 !important;
+        }
+
         .horizontal-list {
             overflow-x: auto;
             white-space: nowrap;
@@ -114,6 +146,7 @@ class AnimeDetailPage extends LitElement {
         }
 
         .small-card {
+            border: 2px solid #596ACF; 
             display: inline-block;
             background-color: black;
             border-radius: 2em;
@@ -136,9 +169,9 @@ class AnimeDetailPage extends LitElement {
         }
 
         .card {
-            background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
+            border: 3px solid #2cb2ff; 
             background-color: white;
-            flex-basis: 15em;
+            flex-basis: 30em;
             min-height: 15em;
             border-radius: 2em;
             margin-top: 1em;

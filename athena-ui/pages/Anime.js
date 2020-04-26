@@ -10,13 +10,7 @@ class AnimePage extends LitElement {
 
     static get properties() {
         return {
-            route: { type: Object },
-            client: { type: Object },
-            clientIsConnected: { type: Boolean },
-            id: { type: Object }, // id can be between 0-999  
-            latestAnime: { type: Object },
             animeList: { type: Array }
-
         }
     }
 
@@ -29,24 +23,17 @@ class AnimePage extends LitElement {
     }
 
     disconnectedCallBack() { // on element Destroy
-        this.client.destroy(); // kill client
         super.disconnectedCallBack()
     }
 
     getAnimeList() {
-        // networking.js
-
-        // keep correct reference 
         var self = this;
-
-        // as soon as socket is returned, lets send a request
         networking.connect().then(ws => {
-
-            //pass the opened connection to the function, the request and the callback 
             networking.sendmessage({ category: "anime", type: "list" },
-                (animeList) => { // pass the callback function
-                    self.animeList = animeList.data.list; //set latestAnime in Home.js
+                (animeList) => {
+                    self.animeList = animeList.data.list;
                     self.animeList = self.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
+                    console.log(animeList)
                 });
 
         }).catch(error => { // errors with socket connection end up here
@@ -78,8 +65,6 @@ class AnimePage extends LitElement {
             <div class="main">
                 <div class="content">
                 <div class="grid-container">
-                
-                            <!-- Latest anime-->
                 <div class="latest card" @click="${this.clickedAnimeCard}" id="${this.animeList[0].title}"
                             style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
                             url('${this.animeList[0].art.banner}');  background-size: cover; background-position: center;">
