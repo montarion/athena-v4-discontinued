@@ -33,6 +33,11 @@ class Networking:
                 command = data["command"]
                 if command == "sendmsg":
                     msg = data["msg"]
+                    realcommand = msg["command"]
+
+                    msg.pop("command", "")
+                    realdata = msg
+                    msg = {"status": 200, "command": realcommand, "data": realdata}
                     self.logger(f"message is: \n{msg}")
                     pretargetlist = settings().findtarget(data["target"])
                     if pretargetlist["status"] == 200:
@@ -57,6 +62,7 @@ class Networking:
                 await self.messagehandler(datadict)
         except Exception as e:
             pattern = "code = ([0-9]*).*"
+            self.logger(e, "debug", "red")
             searchres = re.search(pattern, str(e))
             realerror = searchres.group(1)
 
