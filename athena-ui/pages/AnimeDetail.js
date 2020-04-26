@@ -19,8 +19,6 @@ class AnimeDetailPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.setPageHandler();
-        // var that = this;
-        console.log('loading:', this.animeName)
         networking.connect().then(_ => {
             this.loadAnime();
             this.getAnimeList();
@@ -67,11 +65,8 @@ class AnimeDetailPage extends LitElement {
     clickedAnimeCard(e) {
         document.location = '#!/anime/' + e.target.id;
         this.animeName = e.target.id;
-        console.log('clicked', e.target.id)
-        
-        networking.connect().then(_ => {
-            this.loadAnime();
-        })
+        const newAnime = this.animeList.filter(anime => anime.title == e.target.id)[0]
+        this.anime = newAnime;
     }
 
     constructor() {
@@ -80,7 +75,6 @@ class AnimeDetailPage extends LitElement {
 
 
     render() {
-        console.log(this.animeList)
         return html`
         <div class= "anime">
             <div class="main">

@@ -26,7 +26,6 @@ function sendmessage(message, callback) {
         const guid = Guid();
         message.metadata.guid = guid;
         requests[guid] = callback != undefined ? callback : null;
-        console.log('just added a callback', requests)
         ws.send(JSON.stringify(message))
     } catch (error) {
         console.error('socket is not yet ready! Did you use connect()?')
@@ -48,7 +47,6 @@ function connect() {
             };
             ws.onmessage = function (e) {
                 const message = JSON.parse(e.data);
-                console.log('callbacks', requests);
                 try {
                     if (message.status == 200) { // OP RESPONSE DOE API-LIKE CALL
                         if (requests[message.metadata.guid] != null) {
@@ -69,7 +67,6 @@ function connect() {
             };
 
         } else {
-            console.info('socket was already connected')
             console.info('socket is connected')
             resolve(ws); // existing socket is returned
         }
