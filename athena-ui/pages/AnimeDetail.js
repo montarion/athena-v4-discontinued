@@ -19,34 +19,12 @@ class AnimeDetailPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.setPageHandler();
-        var that = this;
+        // var that = this;
         console.log('loading:', this.animeName)
         networking.connect().then(_ => {
-
-            networking.sendmessage(
-                {
-                    category: "anime",
-                    type: "showinfo",
-                    data: {
-                        show: this.animeName
-                    }
-                }, (anime) => {
-                    that.anime = anime.data;
-                });
-
-            networking.sendmessage(
-                {
-                    category: "anime",
-                    type: "list"
-                },
-                (animeList) => {
-                    that.animeList = animeList.data.list;
-                    that.animeList = that.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
-                });
-
+            this.loadAnime();
+            this.getAnimeList();
         })
-        // this.loadAnime();
-        // this.getAnimeList();
 
         var dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
     }
@@ -65,33 +43,25 @@ class AnimeDetailPage extends LitElement {
     }
 
     loadAnime() {
-        console.log('loading:', this.animeName)
         var that = this;
-        networking.connect().then(_ => {
-            networking.sendmessage(
-                {
-                    category: "anime",
-                    type: "showinfo",
-                    data: {
-                        show: this.animeName
-                    }
-                }, (res) => { that.anime = res.data; })
-        })
+        networking.sendmessage(
+            {
+                category: "anime",
+                type: "showinfo",
+                data: {
+                    show: this.animeName
+                }
+            }, (res) => { that.anime = res.data; })
     }
 
     getAnimeList() {
         var that = this;
-        networking.connect().then(_ => {
-            networking.sendmessage(
-                { category: "anime", type: "list" },
-                (animeList) => {
-                    that.animeList = animeList.data.list;
-                    that.animeList = that.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
-                });
-
-        }).catch(error => { // errors with socket connection end up here
-            console.log(error);
-        });
+        networking.sendmessage(
+            { category: "anime", type: "list" },
+            (animeList) => {
+                that.animeList = animeList.data.list;
+                that.animeList = that.animeList.sort((anime1, anime2) => anime2.aired_at - anime1.aired_at);
+            });
     }
 
     clickedAnimeCard(e) {
