@@ -17,14 +17,16 @@
 <body>
 
   <div id="app" class="container">
-    <div id="navbar-toggle" class="toggle-button" onclick="toggleNavbar()">
-      <i class="fas fa-bars toggle-icon"></i>
-    </div>
-    <div id="navbar" class="vertical-menu">
-      <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
-      <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
-      <a class="nav-link" href="#!/events"> Events <i class="fas fa-envelope-open-text"></i></a>
-    </div>
+    <div class="sticky">
+      <div id="navbar-toggle" class="toggle-button" onclick="toggleNavbar()">
+        <i class="fas fa-bars toggle-icon"></i>
+      </div>
+      <div id="navbar" class="vertical-menu">
+        <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
+        <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
+        <a class="nav-link" href="#!/events"> Events <i class="fas fa-envelope-open-text"></i></a>
+      </div>
+  </div>
     <div class="text-center">
       <athena-router-outlet></athena-router-outlet>
     </div>

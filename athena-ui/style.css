@@ -17,12 +17,15 @@ html {
 
 .nav-link .router-link-exact-active .router-link-active {}
 
-.vertical-menu {
-    /* position: relative; */
+
+.sticky {
     position: -webkit-sticky;
     position: sticky;
     top: 0;
     float: left;
+}
+
+.vertical-menu {
     width: 20vw;
     color: white;
     display: flex;
@@ -49,36 +52,26 @@ html {
     background-color: #2CB2FF;
 }
 
-.nav-link:first-child {
-    /* border-top-left-radius: 2em; */
-    /* border-top-right-radius: 2em; */
-}
-
 .nav-link:last-child {
     border-bottom-left-radius: 2em;
     border-bottom-right-radius: 2em;
-    
     border: 2px solid #2CB2FF;
 }
 
 .hidden {
-    /* display: none; */
     width: 5vw !important;
 }
 
 .button-hidden {
     width: 5.9vw !important;
-
 }
 
 .toggle-button {
     padding-top: 4px;
     padding-bottom: 2px;
     color: white;
-    position: -webkit-sticky;
-    position: sticky;
     top: 0;
-    z-index: 9000;
+    /* z-index: 9000; */
     width: 19.7vw;
     border-top: 2px solid #2CB2FF;
     border-left: 2px solid #2CB2FF;
