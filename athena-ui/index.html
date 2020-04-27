@@ -22,11 +22,12 @@
         <i class="fas fa-bars toggle-icon"></i>
       </div>
       <div id="navbar" class="vertical-menu">
-        <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
-        <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
-        <a class="nav-link" href="#!/events"> Events <i class="fas fa-envelope-open-text"></i></a>
+        <a class="nav-link" href="#!/home"> <span class="link-text">Home</span> <i class="fas fa-home"></i> </a>
+        <a class="nav-link" href="#!/anime"> <span class="link-text">Anime</span> <i class="fas fa-dragon"></i></a>
+        <a class="nav-link" href="#!/events"> <span class="link-text">Events</span> <i
+            class="fas fa-envelope-open-text"></i></a>
       </div>
-  </div>
+    </div>
     <div class="text-center">
       <athena-router-outlet></athena-router-outlet>
     </div>
@@ -43,11 +44,21 @@
     if (!hidden) {
       document.getElementById("navbar").classList.add("hidden");
       document.getElementById("navbar-toggle").classList.add('button-hidden');
-        hidden = !hidden;
+
+      const elems = document.getElementsByClassName("link-text");
+      for (const el of elems) {
+        el.innerHTML = "";
+      }
+
+      hidden = !hidden;
     }
     else {
       document.getElementById("navbar").classList.remove("hidden");
       document.getElementById("navbar-toggle").classList.remove('button-hidden');
+      const elems = document.getElementsByClassName("link-text");
+      for (const [i, el] of [...elems].entries()) {
+        el.innerHTML = i == 0 ? "Home" : i == 1 ? "Anime" : "Events";;
+      }
       hidden = !hidden;
     }
   }
