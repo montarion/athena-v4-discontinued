@@ -53,13 +53,17 @@
       hidden = !hidden;
     }
     else {
+
       document.getElementById("navbar").classList.remove("hidden");
       document.getElementById("navbar-toggle").classList.remove('button-hidden');
-      const elems = document.getElementsByClassName("link-text");
-      for (const [i, el] of [...elems].entries()) {
-        el.innerHTML = i == 0 ? "Home" : i == 1 ? "Anime" : "Events";;
-      }
-      hidden = !hidden;
+
+      setTimeout(() => {
+        const elems = document.getElementsByClassName("link-text");
+        for (const [i, el] of [...elems].entries()) {
+          el.innerHTML = i == 0 ? "Home" : i == 1 ? "Anime" : "Events";;
+        }
+        hidden = !hidden;
+      }, 500);
     }
   }
 </script>
