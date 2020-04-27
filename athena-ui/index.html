@@ -17,12 +17,13 @@
 <body>
 
   <div id="app" class="container">
-
-    <div class="vertical-menu">
+    <div id="navbar-toggle" class="toggle-button" onclick="toggleNavbar()">
+      <i class="fas fa-bars toggle-icon"></i>
+    </div>
+    <div id="navbar" class="vertical-menu">
       <a class="nav-link" href="#!/home"> Home <i class="fas fa-home"></i> </a>
       <a class="nav-link" href="#!/anime"> Anime <i class="fas fa-dragon"></i></a>
       <a class="nav-link" href="#!/events"> Events <i class="fas fa-envelope-open-text"></i></a>
-
     </div>
     <div class="text-center">
       <athena-router-outlet></athena-router-outlet>
@@ -34,5 +35,20 @@
 
 
 </body>
+<script>
+  var hidden = false;
+  function toggleNavbar() {
+    if (!hidden) {
+      document.getElementById("navbar").classList.add("hidden");
+      document.getElementById("navbar-toggle").classList.add('button-hidden');
+        hidden = !hidden;
+    }
+    else {
+      document.getElementById("navbar").classList.remove("hidden");
+      document.getElementById("navbar-toggle").classList.remove('button-hidden');
+      hidden = !hidden;
+    }
+  }
+</script>
 
 </html>

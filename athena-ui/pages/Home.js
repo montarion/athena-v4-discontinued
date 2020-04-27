@@ -74,6 +74,15 @@ class HomePage extends LitElement {
     document.location = '#!/anime/' + e.target.id;
   }
 
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   render() {
 
     return html`
@@ -99,24 +108,31 @@ class HomePage extends LitElement {
               ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
             </div>
           </div>
-          <div class="bottom">
-          <div class="card weather image">
-                <div class="title">
-                  Weather
+          <div class="bottom-content">
+            <div class="card weather image">
+                  <div class="title">
+                    Weather
+                  </div>
+                  <div class="info">
+                    Dutch weather sucks anyways
+                  </div>
+            </div>
+            <div class="divider"></div>
+            <div class="card events image" @click="${this.goToEvents}">
+                  <div class="title">
+                    Upcoming Events
+                  </div>
+                  <div class="info">
+                      FortaRock 2020 \\m/
                 </div>
-                <div class="info">
-                  Dutch weather sucks anyways
-                </div>
-          </div>
-          <div class="divider"></div>
-          <div class="card events image" @click="${this.goToEvents}">
-                <div class="title">
-                   Upcoming Events
-                </div>
-                <div class="info">
-                    FortaRock 2020 \\m/
-              </div>
-          </div>
+            </div>
+        </div>
+        <div class="bottom-content">
+        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
+            <div class="divider"></div>
+        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
+            <div class="divider"></div>
+        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
         </div>
       </div>
       </div>
@@ -128,7 +144,7 @@ class HomePage extends LitElement {
     return css`
 
     .divider {
-      width: 4em;
+      // width: 4em;
     }
 
     .title, site-title { 
@@ -143,19 +159,15 @@ class HomePage extends LitElement {
     }
 
     .info {
-      padding-top: 0.3rem;
-      padding-bottom: 0.3rem;
-      width: 100%;
       background-color: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
       text-shadow: 1px 1px #000000;
     }
+
     .card {
+      flex: 1 1;
       border: 1px solid #2cb2ff; 
       min-height: 15em;
 
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       border-radius: 2em !important;
       margin-bottom: 1em;
       
@@ -172,17 +184,28 @@ class HomePage extends LitElement {
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
   }
-
-  .anime {
+  
+  .bottom-content {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-content: flex-start;
   }
 
   .weather {
+    flex: 3 1;
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
   }
 
+  .divider {
+    flex: 0.1 0.1;
+  }
+
   .events {
+    flex: 2 1;
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
@@ -212,12 +235,8 @@ class HomePage extends LitElement {
    
    .content {
      padding-left: 1em;
-      display: flex;
-      flex-direction: column;
-  }
-  .bottom {
     display: flex;
-    justify-content: space-between;
+     flex-direction: column;
   }
 
   }
