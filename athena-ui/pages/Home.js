@@ -78,11 +78,16 @@ class HomePage extends LitElement {
       if(e.type =="replace"){
       this.replaceCard("events", 
       {
-        type: "events",
+        type: "anime",
         title: e.data.title,
         subtitle: `${e.data.title}: Episode ${e.data.lastep}`,
          bgURL: e.data.art.cover
         });
+    }
+
+    if(e.type=="error"){ //probably socket error
+      var el = document.getElementById("app");
+      el.append("Couldn't connect to socket!")
     }
     else {
       console.log("couldnt replace anything")
@@ -135,7 +140,7 @@ class HomePage extends LitElement {
                 ${title}
               </div>
               <div id="${title}" class="info">
-                ${this.subtitle}
+                ${subtitle}
               </div>
           </div>
       `;
@@ -152,7 +157,7 @@ class HomePage extends LitElement {
         <h1 class="site-title">
           Welcome to Athena
         </h1>
-        <div class="content">
+        <div id="content" class="content">
           <div class="card system image">
             <div class="title">System Stats</div>
             <div class="info">
