@@ -1,0 +1,13 @@
+document describing how the magic-replace dashboard system works
+
+goal: change "cards" on the dashboard on the fly, allowing for semi-fluid card sizes
+
+possible sizes:1/3(1), 1/2(2), 2/3(3), 3/3(4)
+possible directions: left, right
+limitations:
+    maximum of 9 cards(all 1/3)
+    minimum of 3 cards(all 3/3)
+    
+
+commands(received by browser):
+    category=home, type=replace, data={card={"location":[2,2], "direction":"end", "size":"mid"}}

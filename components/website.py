@@ -11,21 +11,49 @@ except:
     from settings import settings
     from logger import logger as mainlogger
 
-import sys, os, json, redis, threading, traceback, uuid
+import sys, os, json, redis, threading, traceback, uuid, random
 from time import sleep
 
 class website:
     def __init__(self):
         self.app = Flask(__name__)
         self.sockets = Sockets(self.app)
+        #self.socketdict = {}
+        self.socketlist = []
 
     def logger(self, msg, type="info", colour="none"):
         self.tag = "website"
         mainlogger().logger(self.tag, msg, type, colour)
 
-    def sendmsg(self, ws, msg):
+    def loopfunc(self):
+        while True:
+            lst = settings().getsettings("anime", "maindict")["resource"]
 
-        ws.send(json.dumps(msg))
+            chosenshow = list(lst.keys())[random.randint(0, len(lst)-1)]
+            preshowdict = lst[chosenshow]
+
+            title = chosenshow
+            imagelink = preshowdict["art"]["cover"]
+            bannerlink = preshowdict["art"]["banner"]
+            episode = preshowdict["lastep"]
+            timestamp = preshowdict["aired_at"]
+
+            showdict = {"title":title, "lastep": episode, "aired_at": timestamp, "art":{"cover": imagelink, "banner": bannerlink}}
+            category = "tests"
+            type = "replace"
+            metadata = {"target":"anime", "guid": self.createGUID()}
+            finaldict = {"status": 200, "category": category, "type": type, "data":showdict, "metadata": metadata}
+
+            for ws in self.socketlist:
+                self.sendmsg(ws, finaldict)
+            sleep(15)
+    def sendmsg(self, ws, msg):
+        try:
+            ws.send(json.dumps(msg))
+        except Exception as e:
+            # handle this properly
+            self.logger(e, "alert", "red")
+            pass 
 
     def createGUID(self):
         guid = str(uuid.uuid4())
@@ -45,6 +73,11 @@ class website:
                 self.logger("added guid!")
             
                 
+            if category == "admin":
+                if type == "signin":
+                    #TODO implement sign in process
+                    pass
+
             if category == "test":
                 if type == "failure":
                     finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
@@ -149,6 +182,7 @@ class website:
 
     def runserver(self):
 
+        threading.Thread(target=self.loopfunc).start()
         @self.sockets.route('/')
         def socket(ws):
             try:
@@ -156,6 +190,8 @@ class website:
                     message = ws.receive()
                     if message:
                         self.logger(f"Message received: {message}")
+                        if ws not in self.socketlist:
+                            self.socketlist.append(ws)
                         self.messagehandler(ws, message)
             #except webSocketError:
             #    self.logger("lost connection!")
