@@ -21,12 +21,16 @@ class HomePage extends LitElement {
       route: { type: Object },
       client: { type: Object },
       latestAnime: { type: Object },
-      test: { type: Object }
+      test: { type: Object },
+      cards: { type: Array },
+      eventCard: { type: Object }
     }
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.cards = [];
+    this.eventCard = { type: "events", title: "Upcoming Events", subtitle: "FortaRock 2020", bgURL: "https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8" }
     this.setPageHandler();
     this.getLatestAnime();
     // setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
@@ -57,12 +61,32 @@ class HomePage extends LitElement {
     });
   }
 
+
+
+  replaceCard(id, card) {
+    if (id == "events") {
+      this.eventCard = card;
+    }
+    if (id == "anime") {
+      this.animeCard = card;
+    }
+  }
+
   setPageHandler() {
     networking.setPageCallbackHandler((e) => {
       console.log("HOME-PAGE HANDLING:", e)
-      // if(e.type=="new-latest-anime") { do stuff with event }
-      // if(e.type=="new-weather-forecast") { do stuff with event }
-      //etc.
+      if(e.type =="replace"){
+      this.replaceCard("events", 
+      {
+        type: "events",
+        title: e.data.title,
+        subtitle: `${e.data.title}: Episode ${e.data.lastep}`,
+         bgURL: e.data.art.cover
+        });
+    }
+    else {
+      console.log("couldnt replace anything")
+    }
     });
   }
 
@@ -82,6 +106,42 @@ class HomePage extends LitElement {
     }
     return color;
   }
+
+  renderCard({ type, title, subtitle, bgURL }) {
+    console.log('rendering:', type, title)
+    if (type == "events") {
+      return html`
+          <div class="card events image" @click="${this.goToEvents}"
+          style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
+          url('${bgURL}'); background-size: cover; background-position: center;">
+              <div class="title">
+                ${title}
+              </div>
+              <div class="info">
+                ${subtitle}
+              </div>
+          </div>
+      `;
+    }
+
+    if (type == "anime") {
+      return html`
+          <div  id="${title}" 
+          @click="${this.clickedLatestAnime}" 
+          class="card anime image" 
+          style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
+          url('${bgURL}'); background-size: cover; background-position: center;">
+              <div id="${title}" class="title">
+                ${title}
+              </div>
+              <div id="${title}" class="info">
+                ${this.subtitle}
+              </div>
+          </div>
+      `;
+    }
+  }
+
 
   render() {
 
@@ -103,10 +163,11 @@ class HomePage extends LitElement {
           @click="${this.clickedLatestAnime}" 
           class="card anime image" 
           style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${this.latestAnime.art.banner}'); background-size: cover; background-position: center;">
-          <div id="${this.latestAnime.title}" class="title">Latest Anime</div>
-            <div id="${this.latestAnime.title}" class="info">
+              <div id="${this.latestAnime.title}" class="title">Latest Anime
+              </div>
+              <div id="${this.latestAnime.title}" class="info">
               ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
-            </div>
+              </div>
           </div>
           <div class="bottom-content">
             <div class="card weather image">
@@ -118,23 +179,17 @@ class HomePage extends LitElement {
                   </div>
             </div>
             <div class="divider"></div>
-            <div class="card events image" @click="${this.goToEvents}">
-                  <div class="title">
-                    Upcoming Events
-                  </div>
-                  <div class="info">
-                      FortaRock 2020 \\m/
-                </div>
-            </div>
+            ${this.renderCard(this.eventCard)}
+        </div>
+        <!-- <div class="bottom-content">
+          <div class="card" style="flex: 2; background-color: ${this.getRandomColor()}"></div>
+            <div class="divider"></div>
+          <div class="card" style="background-color: ${this.getRandomColor()}"></div>
         </div>
         <div class="bottom-content">
-        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
-            <div class="divider"></div>
-        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
-            <div class="divider"></div>
-        <div class="card" style="background-color: ${this.getRandomColor()}"></div>
+          <div class="card" style="flex: 1; background-color: ${this.getRandomColor()}"></div>
         </div>
-      </div>
+      </div>-->
       </div>
 
    </div>
@@ -144,7 +199,6 @@ class HomePage extends LitElement {
     return css`
 
     .divider {
-      // width: 4em;
     }
 
     .title, site-title { 
