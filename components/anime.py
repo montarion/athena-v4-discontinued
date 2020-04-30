@@ -2,6 +2,7 @@ import os, requests, json, redis, feedparser, re, time
 
 from components.logger import logger as mainlogger
 from components.settings import settings
+from components.events import Event
 
 class anime:
     def __init__(self):
@@ -19,7 +20,7 @@ class anime:
             self.watchlist = self.findshows()
         predict = settings().getsettings("anime", None)
         if predict["status"] == 200:
-            self.maindict = predict["resource"]["maindict"]
+            self.maindict = predict["resource"].get("maindict", {})
             #self.maindict = predict["resource"]
             self.animedict = predict["resource"]
         else:
@@ -34,7 +35,8 @@ class anime:
         feed = feedparser.parse(base)
         entries = feed.entries
         sessiondict = {}
-        for x in range(0, number):
+        x = 0
+        while x < number:
             entry = entries[x]
             title, show, episode = self.cleantitle(entry["title"])
             link = entry["link"]
@@ -50,18 +52,22 @@ class anime:
                     self.maindict[show]["art"]["cover"] = imagelink
                     self.maindict[show]["art"]["banner"] = bannerlink
                     self.maindict[show]["meta"]["maxepisodes"] = maxepisodes
-                sessiondict["imagelink"] = self.maindict[show]["art"]["cover"]
-                sessiondict["bannerlink"] = self.maindict[show]["art"]["banner"]
+                sessiondict["art"] = {}
+                sessiondict["art"]["cover"] = self.maindict[show]["art"]["cover"]
+                sessiondict["art"]["banner"] = self.maindict[show]["art"]["banner"]
 
                 self.maindict[show]["lastep"] = episode
                 if self.animedict.get("lastshow", "show") != show:
                     self.download(show, link)
-                    self.maindict[show]["aired_at"] = time.time()
+                    ct = int(time.time())
+                    self.maindict[show]["aired_at"] = ct
+                    sessiondict["aired_at"] = ct
+                    Event().anime(sessiondict)
                 if self.firstshow:
                     self.firstshow = False
                     settings().setsettings("anime", "lastshow", show)
                     self.r.set("lastshow", json.dumps(sessiondict))
-                    
+            x += 1
         self.r.set("animedict", json.dumps(self.maindict))
         settings().setsettings("anime", "maindict", self.maindict)
         
