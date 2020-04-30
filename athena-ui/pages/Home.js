@@ -75,23 +75,20 @@ class HomePage extends LitElement {
   setPageHandler() {
     networking.setPageCallbackHandler((e) => {
       console.log("HOME-PAGE HANDLING:", e)
-      if(e.type =="replace"){
-      this.replaceCard("events", 
-      {
-        type: "anime",
-        title: e.data.title,
-        subtitle: `${e.data.title}: Episode ${e.data.lastep}`,
-         bgURL: e.data.art.cover
-        });
-    }
+      if (e.type == "replace") {
+        this.replaceCard("events",
+          {
+            type: "anime",
+            title: e.data.title,
+            subtitle: `${e.data.title}: Episode ${e.data.lastep}`,
+            bgURL: e.data.art.cover
+          });
+      }
 
-    if(e.type=="error"){ //probably socket error
-      var el = document.getElementById("app");
-      el.append("Couldn't connect to socket!")
-    }
-    else {
-      console.log("couldnt replace anything")
-    }
+      if (e.type == "error") { //probably socket error
+        var el = document.getElementById("app");
+        el.append("Couldn't connect to socket!")
+      }
     });
   }
 
@@ -134,7 +131,9 @@ class HomePage extends LitElement {
           <div  id="${title}" 
           @click="${this.clickedLatestAnime}" 
           class="card anime image" 
-          style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
+          style="
+          flex: 2 1;
+          background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
           url('${bgURL}'); background-size: cover; background-position: center;">
               <div id="${title}" class="title">
                 ${title}
