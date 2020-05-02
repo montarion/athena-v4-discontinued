@@ -7,9 +7,11 @@ from geventwebsocket.handler import WebSocketHandler
 try:
     from components.settings import settings
     from components.logger import logger as mainlogger
+    from components.weather import weather
 except:
     from settings import settings
     from logger import logger as mainlogger
+    from weather import weather
 
 import sys, os, json, redis, threading, traceback, uuid, random
 from time import sleep
@@ -24,12 +26,41 @@ class website:
         self.sockets = Sockets(self.app)
         #self.socketdict = {}
         self.socketlist = []
+        self.r = redis.Redis(host='localhost', port=6379, db=0)
+        self.p = self.r.pubsub()
+        self.p.subscribe("sendwebmsg")
 
     def logger(self, msg, type="info", colour="none"):
         self.tag = "website"
         mainlogger().logger(self.tag, msg, type, colour)
 
+    def msgcheck(self):
+        # pubsub checker to send messages
+        while True:
+            msg = self.p.get_message()
+            if msg and type(msg["data"]) != int:
+                data = json.loads(msg["data"].decode())
+                command = data["command"]
+                if command == "sendmsg":
+                    msg = data["msg"]
+                    realcommand = msg["command"]
+                    msg.pop("command", "")
+                    realmetadata = msg.get("metadata", {})
+                    msgtype = msg["type"]
+                    msg.pop("type", "")
+                    target = data["target"]
+                    realmetadata["target"] = target
+                    realmetadata["guid"] = self.createGUID()
+                    msg.pop("metadata", "")
+                    realdata = msg
+                    msg = {"status": 200, "command": realcommand, "type": msgtype, "data": realdata, "metadata": realmetadata}
+                    self.logger(f"message is: \n{msg}")
+                    for ws in self.socketlist:
+                        self.sendmsg(ws, msg)
+            sleep(3)
+
     def loopfunc(self):
+        self.logger("in loop func!", "info", "blue")
         while True:
             lst = settings().getsettings("anime", "maindict")["resource"]
 
@@ -46,10 +77,22 @@ class website:
             category = "tests"
             type = "replace"
             metadata = {"target":"anime", "guid": self.createGUID()}
-            finaldict = {"status": 200, "category": category, "type": type, "data":showdict, "metadata": metadata}
+            finaldict = {"status": 200, "command": category, "type": type, "data":showdict, "metadata": metadata}
 
             for ws in self.socketlist:
                 self.sendmsg(ws, finaldict)
+
+
+            # weather
+            results = weather().getcurrentweather()["resource"]
+            self.logger(results)
+
+            metadata = {"target":"weather", "guid": self.createGUID()}
+
+            finaldict = {"status": 200, "category": "weather", "type": "current", "data": results, "metadata":metadata}
+            for ws in self.socketlist:
+                self.sendmsg(ws, finaldict)
+
             sleep(15)
 
     def sendmsg(self, ws, msg):
@@ -58,6 +101,7 @@ class website:
         except Exception as e:
             # handle this properly
             self.logger(e, "alert", "red")
+            self.socketlist.remove(ws)
             pass #TODO onnodig
 
     def createGUID(self):
@@ -84,7 +128,13 @@ class website:
                 if type == "signin":
                     #TODO implement sign in process
                     pass
+                if type == "weather":
+                    results = weather().getcurrentweather()["resource"]
+                    self.logger(results)
 
+                    finaldict = {"status": 200, "category": category, "type": "current", "data": results, "metadata":metadata}
+
+                    self.sendmsg(ws, finaldict)
             if category == "test":
                 if type == "failure":
                     finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
@@ -172,7 +222,10 @@ class website:
 
             if category == "weather":
                 # TODO remove when implemented
-                finaldict = {"status": 501, "category": category, "metadata":metadata}
+                results = weather().getcurrentweather()["resource"]
+                self.logger(results)
+                finaldict = {"status": 200, "category": category, "type": "current", "data": results, "metadata":metadata}
+
                 self.sendmsg(ws, finaldict)
 
                 if type == "current": # require data to include location
@@ -195,6 +248,7 @@ class website:
     def runserver(self):
 
         threading.Thread(target=self.loopfunc).start()
+        threading.Thread(target=self.msgcheck).start()
         @self.sockets.route('/')
         def socket(ws):
             try:
