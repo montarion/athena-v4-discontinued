@@ -63,6 +63,7 @@ function connect() {
             };
             ws.onerror = function (err) {
                 console.error('Socket connection errored')
+                pageCallbackHandler(err)
                 reject(err);
             };
 
