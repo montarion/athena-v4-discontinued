@@ -14,6 +14,10 @@ except:
 import sys, os, json, redis, threading, traceback, uuid, random
 from time import sleep
 
+#TODO on many places you create variables you do not use later on. Avoid this and refactor them into direct assignments
+#TODO put an else at the end of all your else-ifs, to catch any unwanted messages
+#TODO put all the status-codes into an Enum (you can document the codes here as well very nicely)
+
 class website:
     def __init__(self):
         self.app = Flask(__name__)
@@ -47,18 +51,21 @@ class website:
             for ws in self.socketlist:
                 self.sendmsg(ws, finaldict)
             sleep(15)
+
     def sendmsg(self, ws, msg):
         try:
             ws.send(json.dumps(msg))
         except Exception as e:
             # handle this properly
             self.logger(e, "alert", "red")
-            pass 
+            pass #TODO onnodig
 
     def createGUID(self):
-        guid = str(uuid.uuid4())
+        guid = str(uuid.uuid4()) #TODO onnodig
         return guid
 
+    #TODO extract this into its own class, as it is going to get pretty huge.
+    # make a single Handle() and then just call MessageHandler.Handle(ws, message)
     def messagehandler(self, ws, message):
             message = json.loads(message)
 
@@ -127,6 +134,8 @@ class website:
                                 anilist.append(entry)
                         finaldict = {"status": 200, "category": category, "type": type, "data":{"list":anilist}, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
+
+                        #TODO remove this testing message
                         finaldict = {"status": 406, "message":"Failure is not acceptable"}
                         self.sendmsg(ws, finaldict)
 
@@ -146,6 +155,7 @@ class website:
                         showinfo["title"] = latestshow
                         finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata": metadata}
                         self.sendmsg(ws, finaldict)
+                        #TODO remove testmessage
                         finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}, "metadata":metadata}
                         self.sendmsg(ws, finaldict)
 
@@ -178,6 +188,8 @@ class website:
                 # TODO remove when implemented
                 finaldict = {"status": 501, "category": category, "metadata":metadata}
                 self.sendmsg(ws, finaldict)
+
+            #TODO make above ifs into elifs and then add one final else to catch all not-known category requests
 
 
     def runserver(self):
