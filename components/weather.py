@@ -14,6 +14,7 @@ class weather:
 
     def getcurrentweather(self):
         prelocation = settings().getsettings("personalia", "location")["resource"]
+
         if "coords" not in prelocation:
             self.logger("Unable to find coordinates")
             # ask for location(TODO: modules > getlocation?)
@@ -27,7 +28,7 @@ class weather:
             # then try again
             #self.getforecast()
 
-        title = prelocation["name"] # if coords are in, name will also be in
+        title = prelocation["city"] # if coords are in, city name will also be in
         apikey = prelocation["apikey"]
 
         baseurl = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={apikey}&units=metric"
