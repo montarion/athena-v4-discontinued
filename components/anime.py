@@ -37,7 +37,13 @@ class anime:
         sessiondict = {}
         x = 0
         while x < number:
-            entry = entries[x]
+            try:
+                entry = entries[x]
+            except IndexError:
+                self.logger(f"Tried index {x} and failed.")
+                break
+            except Exception as e:
+                self.logger("I tried logging.", "alert", "blue")
             title, show, episode = self.cleantitle(entry["title"])
             link = entry["link"]
             if self.watchall:

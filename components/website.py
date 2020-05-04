@@ -84,14 +84,14 @@ class website:
 
 
             # weather
-            results = weather().getcurrentweather()["resource"]
-            self.logger(results)
+            #results = weather().getcurrentweather()["resource"]
+            #self.logger(results)
 
-            metadata = {"target":"weather", "guid": self.createGUID()}
+            #metadata = {"target":"weather", "guid": self.createGUID()}
 
-            finaldict = {"status": 200, "category": "weather", "type": "current", "data": results, "metadata":metadata}
-            for ws in self.socketlist:
-                self.sendmsg(ws, finaldict)
+            #finaldict = {"status": 200, "category": "weather", "type": "current", "data": results, "metadata":metadata}
+            #for ws in self.socketlist:
+                #self.sendmsg(ws, finaldict)
 
             sleep(15)
 
@@ -102,7 +102,6 @@ class website:
             # handle this properly
             self.logger(e, "alert", "red")
             self.socketlist.remove(ws)
-            pass #TODO onnodig
 
     def createGUID(self):
         guid = str(uuid.uuid4()) #TODO onnodig
@@ -205,10 +204,6 @@ class website:
                         showinfo["title"] = latestshow
                         finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata": metadata}
                         self.sendmsg(ws, finaldict)
-                        #TODO remove testmessage
-                        finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}, "metadata":metadata}
-                        self.sendmsg(ws, finaldict)
-
 
                 if type == "showinfo":
                     targetshow = data["show"]
