@@ -4,6 +4,7 @@ from fuzzywuzzy import process
 from components.logger import logger as mainlogger
 from components.anime import anime
 from components.events import Event
+from components.weather import weather
 
 class Modules:
     def __init__(self):
@@ -18,14 +19,17 @@ class Modules:
         while True:
             self.logger("Running anime!")
             anime().getshows()
-
-            Event().anime()
-            sleep(120)
+            self.logger("Running weather!")
+            weather().getcurrentweather()
+            #Event().anime()
+            sleep(20)
 
     def getlocation(self):
         pass
 
+
     def fuzzysearch(self, target, options, searchtype = "highest", include_score=False):
+        # use for letting users search for stuff
         if searchtype == "highest":
             searchres = process.extractOne(target, options)
             if not include_score:
