@@ -8,7 +8,7 @@ class weather:
         self.tag = "weather"
         self.r = redis.Redis(host='localhost', port=6379, db=0)
         self.p = self.r.pubsub()
-        self.refreshtime = 30*1000 #change 30 to 7200 after testing # milliseconds # TODO: make this a setting
+        self.refreshtime = 30 #change 30 to  after testing # seconds # TODO: make this a setting
 
     def logger(self, msg, type="info", colour="none"):
         mainlogger().logger(self.tag, msg, type, colour)
@@ -65,6 +65,7 @@ class weather:
                 if timediff > self.refreshtime:
                     settings().setsettings("weather", "current", curdict)
                     Event().weather(curdict)
+                
             else:
                 settings().setsettings("weather", "current", curdict)
                 Event().weather(curdict)
