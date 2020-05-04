@@ -5,6 +5,7 @@ from components.logger import logger as mainlogger
 from components.settings import settings
 from components.anime import anime
 from components.weather import weather
+from components.messagehandler import messagehandler
 
 class Networking:
     def __init__(self):
@@ -44,7 +45,7 @@ class Networking:
                         targetlist = pretargetlist["resource"]
                         for target in targetlist:
                             self.logger(f"target is: {target}")
-                            await self.sendbyname(msg, target)
+                            await messagehandler().sendbyname(msg, target)
                     else:
                         self.logger(pretargetlist["resource"])
             await asyncio.sleep(3)
@@ -55,11 +56,11 @@ class Networking:
             while True:
                 data = await websocket.recv()
                 self.logger(data)
-                datadict = json.loads(data)
+                datadict = json.loads(str(data))
                 if "metadata" not in datadict:
                     datadict["metadata"] = {}
                 datadict["metadata"].update({"websocket":websocket})
-                await self.messagehandler(datadict)
+                await messagehandler().messagehandler(websocket, datadict)
         except Exception as e:
             pattern = "code = ([0-9]*).*"
             self.logger(e, "debug", "red")
@@ -175,11 +176,12 @@ class Networking:
                 for target in targetlist:
                     await self.sendbyname(weatherresults, target)
 
+        
     def startserving(self):
         serveserver = websockets.server.serve(self.runserver, "0.0.0.0", 8000, loop=self.loop, ping_interval=60)
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(serveserver)
-        self.loop.run_until_complete(self.msgcheck())
+        #self.loop.run_until_complete(self.msgcheck())
         self.loop.run_forever()
 
 
