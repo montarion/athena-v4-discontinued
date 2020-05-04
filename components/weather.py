@@ -8,6 +8,7 @@ class weather:
         self.tag = "weather"
         self.r = redis.Redis(host='localhost', port=6379, db=0)
         self.p = self.r.pubsub()
+        self.refreshtime = 7200*1000 # milliseconds # TODO: make this a setting
 
     def logger(self, msg, type="info", colour="none"):
         mainlogger().logger(self.tag, msg, type, colour)
@@ -54,7 +55,17 @@ class weather:
             iconurl = iconbase + icon + "@2x.png"
             curdict = {"location": title, "time": dt, "temp":temp, "rain":rain, "sunrise":sunrise, "sunset":sunset, "clouds":clouds, "windspeed":windspeed, "iconurl":iconurl}
             # cache this to file, maybe?
-
+            preoldweather = settings().getsettings("weather", "current")
+            if preoldweather["status"] == 200:
+                oldweather = preoldweather["resource"]
+                oldtime = oldweather["time"]
+                timediff = dt - oldtime
+                if timediff > self.refreshtime:
+                    settings().setsettings("weather", "current", curdict)
+                    Event().weather(curdict)
+            else:
+                settings().setsettings("weather", "current", curdict)
+                Event().weather(curdict)
             return {"status":200, "resource":curdict}
         except Exception as e:
             self.logger(e, "alert", "red")
