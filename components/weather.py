@@ -1,14 +1,14 @@
-import os, requests, json, redis, re
+import os, requests, json, redis, re, time
 
 from components.logger import logger as mainlogger
 from components.settings import settings
-
+from components.events import Event
 class weather:
     def __init__(self):
         self.tag = "weather"
         self.r = redis.Redis(host='localhost', port=6379, db=0)
         self.p = self.r.pubsub()
-        self.refreshtime = 7200*1000 # milliseconds # TODO: make this a setting
+        self.refreshtime = 30*1000 #change 30 to 7200 after testing # milliseconds # TODO: make this a setting
 
     def logger(self, msg, type="info", colour="none"):
         mainlogger().logger(self.tag, msg, type, colour)
@@ -42,7 +42,7 @@ class weather:
             # current weather
             curdict = {}
             cur = res["current"]
-            dt = cur["dt"] # time of request, unix, utc
+            dt = int(time.time()) # time of request, unix, utc
             temp = cur["temp"]
             sunrise = cur["sunrise"]
             sunset = cur["sunset"]
@@ -59,7 +59,9 @@ class weather:
             if preoldweather["status"] == 200:
                 oldweather = preoldweather["resource"]
                 oldtime = oldweather["time"]
+                self.logger(f"oldtime: {oldtime} - newtime: {dt}", "debug")
                 timediff = dt - oldtime
+                self.logger(timediff)
                 if timediff > self.refreshtime:
                     settings().setsettings("weather", "current", curdict)
                     Event().weather(curdict)
