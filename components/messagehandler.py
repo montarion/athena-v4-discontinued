@@ -56,6 +56,7 @@ class messagehandler:
         return finalnames
 
 
+    #TODO check if the reserved keyword type works here ;), furthermore, nice job on replacing this
     async def messagehandler(self, ws, message):
         category = message["category"]
         type = message["type"]
