@@ -1,5 +1,12 @@
 // networking
-var ws = new WebSocket("ws://83.163.109.161:8080/");
+
+var ws = new WebSocket("ws://83.163.109.161:8000/");
+
+// remove previous socket
+$(window).on('beforeunload', function(){
+    ws.close();
+});
+
 var pageCallbackHandler = undefined; // page specific onmessage-handler for messages received from server
 var requests = []; // array to register callback functions by their GUID
 
@@ -11,7 +18,7 @@ function Guid() {
 }
 
 function sendmsg(category, type, data = {}, metadata = {}, callback) {
-    callbackFunc = callback;
+    //callbackFunc = callback;
     try {
         ws.send(JSON.stringify({ "category": category, "type": type, "data": data, "metadata": metadata }))
     } catch {
@@ -43,13 +50,13 @@ function connect() {
             console.info("socket is connecting...");
             ws.onopen = function () {
                 console.info('socket is connected')
-                
+                sendmsg("test", "failure");
                 resolve(ws); // new socket is returned
             };
             ws.onmessage = function (e) {
                 const message = JSON.parse(e.data);
+                console.log(message)
                 try {
-                    console.log("INCOMING MESSAGE: " + message);
                     if (message.status == 200) { // OP RESPONSE DOE API-LIKE CALL
                         if (requests[message.metadata.guid] != null) {
                             requests[message.metadata.guid](message);
@@ -65,6 +72,8 @@ function connect() {
             };
             ws.onerror = function (err) {
                 console.error('Socket connection errored')
+                console.error(err)
+                pageCallbackHandler(err)
                 reject(err);
             };
 

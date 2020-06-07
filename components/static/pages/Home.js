@@ -21,12 +21,16 @@ class HomePage extends LitElement {
       route: { type: Object },
       client: { type: Object },
       latestAnime: { type: Object },
-      test: { type: Object }
+      test: { type: Object },
+      cards: { type: Array },
+      eventCard: { type: Object }
     }
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this.cards = [];
+    this.eventCard = { type: "events", title: "Upcoming Events", subtitle: "FortaRock 2020", bgURL: "https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8" }
     this.setPageHandler();
     this.getLatestAnime();
     // setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
@@ -50,6 +54,7 @@ class HomePage extends LitElement {
       networking.sendmessage({ category: "anime", type: "latest" },
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
+          console.log(self.latestAnime)
         });
 
     }).catch(error => { // errors with socket connection end up here
@@ -57,12 +62,34 @@ class HomePage extends LitElement {
     });
   }
 
+
+
+  replaceCard(id, card) {
+    if (id == "events") {
+      this.eventCard = card;
+    }
+    if (id == "anime") {
+      this.animeCard = card;
+    }
+  }
+
   setPageHandler() {
     networking.setPageCallbackHandler((e) => {
       console.log("HOME-PAGE HANDLING:", e)
-      // if(e.type=="new-latest-anime") { do stuff with event }
-      // if(e.type=="new-weather-forecast") { do stuff with event }
-      //etc.
+      if (e.type == "replace") {
+        this.replaceCard("events",
+          {
+            type: "anime",
+            title: e.data.title,
+            subtitle: `${e.data.title}: Episode ${e.data.lastep}`,
+            bgURL: e.data.art.cover
+          });
+      }
+
+      if (e.type == "error") { //probably socket error
+        var el = document.getElementById("app");
+        el.append("Couldn't connect to socket!")
+      }
     });
   }
 
@@ -74,6 +101,53 @@ class HomePage extends LitElement {
     document.location = '#!/anime/' + e.target.id;
   }
 
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  renderCard({ type, title, subtitle, bgURL }) {
+    console.log('rendering:', type, title)
+    if (type == "events") {
+      return html`
+          <div class="card events image" @click="${this.goToEvents}"
+          style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
+          url('${bgURL}'); background-size: cover; background-position: center;">
+              <div class="title">
+                ${title}
+              </div>
+              <div class="info">
+                ${subtitle}
+              </div>
+          </div>
+      `;
+    }
+
+    if (type == "anime") {
+      return html`
+          <div  id="${title}" 
+          @click="${this.clickedLatestAnime}" 
+          class="card anime image" 
+          style="
+          flex: 2 1;
+          background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), 
+          url('${bgURL}'); background-size: cover; background-position: center;">
+              <div id="${title}" class="title">
+                ${title}
+              </div>
+              <div id="${title}" class="info">
+                ${subtitle}
+              </div>
+          </div>
+      `;
+    }
+  }
+
+
   render() {
 
     return html`
@@ -83,7 +157,7 @@ class HomePage extends LitElement {
         <h1 class="site-title">
           Welcome to Athena
         </h1>
-        <div class="content">
+        <div id="content" class="content">
           <div class="card system image">
             <div class="title">System Stats</div>
             <div class="info">
@@ -94,31 +168,33 @@ class HomePage extends LitElement {
           @click="${this.clickedLatestAnime}" 
           class="card anime image" 
           style="background-image: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)), url('${this.latestAnime.art.banner}'); background-size: cover; background-position: center;">
-          <div id="${this.latestAnime.title}" class="title">Latest Anime</div>
-            <div id="${this.latestAnime.title}" class="info">
+              <div id="${this.latestAnime.title}" class="title">Latest Anime
+              </div>
+              <div id="${this.latestAnime.title}" class="info">
               ${this.latestAnime.title} - Episode: ${this.latestAnime.lastep}
-            </div>
-          </div>
-          <div class="bottom">
-          <div class="card weather image">
-                <div class="title">
-                  Weather
-                </div>
-                <div class="info">
-                  Dutch weather sucks anyways
-                </div>
-          </div>
-          <div class="divider"></div>
-          <div class="card events image" @click="${this.goToEvents}">
-                <div class="title">
-                   Upcoming Events
-                </div>
-                <div class="info">
-                    FortaRock 2020 \\m/
               </div>
           </div>
+          <div class="bottom-content">
+            <div class="card weather image">
+                  <div class="title">
+                    Weather
+                  </div>
+                  <div class="info">
+                    Dutch weather sucks anyways
+                  </div>
+            </div>
+            <div class="divider"></div>
+            ${this.renderCard(this.eventCard)}
         </div>
-      </div>
+        <!-- <div class="bottom-content">
+          <div class="card" style="flex: 2; background-color: ${this.getRandomColor()}"></div>
+            <div class="divider"></div>
+          <div class="card" style="background-color: ${this.getRandomColor()}"></div>
+        </div>
+        <div class="bottom-content">
+          <div class="card" style="flex: 1; background-color: ${this.getRandomColor()}"></div>
+        </div>
+      </div>-->
       </div>
 
    </div>
@@ -128,7 +204,6 @@ class HomePage extends LitElement {
     return css`
 
     .divider {
-      width: 4em;
     }
 
     .title, site-title { 
@@ -143,18 +218,15 @@ class HomePage extends LitElement {
     }
 
     .info {
-      padding-top: 0.3rem;
-      padding-bottom: 0.3rem;
-      width: 100%;
       background-color: linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0));
       text-shadow: 1px 1px #000000;
     }
+
     .card {
+      flex: 1 1;
+      border: 1px solid #2cb2ff; 
       min-height: 15em;
 
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
       border-radius: 2em !important;
       margin-bottom: 1em;
       
@@ -171,17 +243,28 @@ class HomePage extends LitElement {
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://media.idownloadblog.com/wp-content/uploads/2014/10/iStat-Mini.png");
   }
-
-  .anime {
+  
+  .bottom-content {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-content: flex-start;
   }
 
   .weather {
+    flex: 3 1;
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://www.holland.com/upload_mm/1/1/e/68507_fullimage_utrecht.jpg");
   }
 
+  .divider {
+    flex: 0.1 0.1;
+  }
+
   .events {
+    flex: 2 1;
     background-image: 
         linear-gradient(to top, rgba(0,0,0, 0.8), rgba(0,0,0, 0.0)),
         url("https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8");
@@ -211,12 +294,8 @@ class HomePage extends LitElement {
    
    .content {
      padding-left: 1em;
-      display: flex;
-      flex-direction: column;
-  }
-  .bottom {
     display: flex;
-    justify-content: space-between;
+     flex-direction: column;
   }
 
   }

@@ -8,12 +8,14 @@ try:
     from components.settings import settings
     from components.logger import logger as mainlogger
     from components.weather import weather
+    from components.messagehandler import messagehandler
 except:
     from settings import settings
     from logger import logger as mainlogger
     from weather import weather
+    from messagehandler import messagehandler
 
-import sys, os, json, redis, threading, traceback, uuid, random
+import asyncio, sys, os, json, redis, threading, traceback, uuid, random
 from time import sleep
 
 #TODO on many places you create variables you do not use later on. Avoid this and refactor them into direct assignments
@@ -24,6 +26,7 @@ class website:
     def __init__(self):
         self.app = Flask(__name__)
         self.sockets = Sockets(self.app)
+        self.MsgHandler = messagehandler()
         #self.socketdict = {}
         self.socketlist = []
         self.r = redis.Redis(host='localhost', port=6379, db=0)
@@ -127,13 +130,6 @@ class website:
                 if type == "signin":
                     #TODO implement sign in process
                     pass
-                if type == "weather":
-                    results = weather().getcurrentweather()["resource"]
-                    self.logger(results)
-
-                    finaldict = {"status": 200, "category": category, "type": "current", "data": results, "metadata":metadata}
-
-                    self.sendmsg(ws, finaldict)
             if category == "test":
                 if type == "failure":
                     finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
@@ -240,12 +236,16 @@ class website:
             #TODO make above ifs into elifs and then add one final else to catch all not-known category requests
 
 
+    def websocklistener(self):
+        pass
+
     def runserver(self):
 
         threading.Thread(target=self.loopfunc).start()
         threading.Thread(target=self.msgcheck).start()
+        """
         @self.sockets.route('/')
-        def socket(ws):
+        async def socket(ws):
             try:
                 while not ws.closed:
                     message = ws.receive()
@@ -253,14 +253,14 @@ class website:
                         self.logger(f"Message received: {message}")
                         if ws not in self.socketlist:
                             self.socketlist.append(ws)
-                        self.messagehandler(ws, message)
+                        await self.MsgHandler.messagehandler(ws, message)
             #except webSocketError:
             #    self.logger("lost connection!")
             except Exception as e:
                 self.logger(e, "alert", "red")
                 traceback.print_exc()
                 self.logger(e.__class__.__name__)
-
+        """
         @self.app.route('/')
         def hello():
             return render_template("index.html")
