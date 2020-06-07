@@ -142,7 +142,7 @@ class Networking:
             address = websocket.remote_address[0]
             if name in self.websockdict:
                 self.logger(f"closing old websocket for {name}")
-                await self.websockdict[name].close(4000)
+                #await self.websockdict[name].close(4000)
             self.websockdict[name] = websocket
             
             # TODO: make this respond to what the user has actually sent(something might be missing)

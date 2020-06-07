@@ -2,6 +2,8 @@
 
 var ws = new WebSocket("ws://83.163.109.161:8000/");
 
+// remove
+var signindata = {"name": "website", "devtype": "website", "subscriptions": ["anime", "notifications"],"capabilities": []}
 // remove previous socket
 $(window).on('beforeunload', function(){
     ws.close();

@@ -105,19 +105,19 @@ class messagehandler:
                 if helpdata == None:
                     message = "Please try inserting one of the methods as data, like: data:{\"method\":\"list\"}"
                     finaldict = {"status": 200, "methods": methods, "message":message, "metadata":metadata}
-                    self.sendmsg(ws, finaldict)
+                    await self.sendmsg(ws, finaldict)
                 elif helpdata == "list":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
-                    self.sendmsg(ws, finaldict)
+                    await self.sendmsg(ws, finaldict)
                 elif helpdata == "latest":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
-                    self.sendmsg(ws, finaldict)
+                    await self.sendmsg(ws, finaldict)
                 elif helpdata == "showinfo":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
-                    self.sendmsg(json.dumps(finaldict))
+                    await self.sendmsg(json.dumps(finaldict))
 
         if category == "admin":
             if type == "signin":
@@ -144,8 +144,8 @@ class messagehandler:
                     data = {"resource":"failed to sign in"}
                     metadata = {"status": 503}
                     msg = self.messagebuilder(category, type, data, metadata)
-                    await self.sendmsg(ws, msg)
-
+                await self.sendmsg(ws, msg)
+                self.logger("Sent Message!", "debug", "red")
         if category == "test":
             if type == "failure":
                 finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
