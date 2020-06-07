@@ -80,6 +80,7 @@ class messagehandler:
         finalmsg = json.dumps({"category": category, "type": type, "data": data, "metadata": metadata})
         return finalmsg
 
+    #TODO check if the reserved keyword type works here ;), furthermore, nice job on replacing this
     async def messagehandler(self, ws, message):
         category = message["category"]
         type = message["type"]

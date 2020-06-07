@@ -33,8 +33,11 @@ class weather:
         apikey = prelocation["apikey"]
 
         baseurl = f"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid={apikey}&units=metric"
+
+        #TODO try-catch this HTTP request
         res = requests.get(baseurl).json()
         self.logger(res.keys())
+        
         try:
             timezone = res["timezone"]
             # maybe write to file

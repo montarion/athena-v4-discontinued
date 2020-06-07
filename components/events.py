@@ -49,3 +49,5 @@ class Event:
     def randomshow(self):
         # pick random show
         pass
+
+#TODO hier mooi voorbeeld van veel variabelen om een message te maken, builder pattern te gebruiken. Try it out

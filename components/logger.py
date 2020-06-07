@@ -35,3 +35,5 @@ class logger:
             print(self.YELLOW + msg + self.ENDC)
         elif colour == "red":
             print(self.RED + msg + self.ENDC)
+
+        #TODO ELSE
