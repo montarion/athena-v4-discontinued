@@ -1,9 +1,8 @@
 // networking
 
 var ws = new WebSocket("ws://83.163.109.161:8000/");
-
-// remove
 var signindata = {"name": "website", "devtype": "website", "subscriptions": ["anime", "notifications"],"capabilities": []}
+
 // remove previous socket
 $(window).on('beforeunload', function(){
     ws.close();
@@ -52,8 +51,13 @@ function connect() {
             console.info("socket is connecting...");
             ws.onopen = function () {
                 console.info('socket is connected')
-                sendmsg("test", "failure");
+                var msg = {"category":"admin", "type":"signin", "data":signindata};
+                sendmessage(msg);
                 resolve(ws); // new socket is returned
+            };
+            ws.onclose = function (e) {
+                console.warn("socket is closed");
+                ws.close();
             };
             ws.onmessage = function (e) {
                 const message = JSON.parse(e.data);
@@ -77,6 +81,7 @@ function connect() {
                 console.error(err)
                 pageCallbackHandler(err)
                 reject(err);
+                
             };
 
         } else {

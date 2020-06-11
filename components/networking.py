@@ -60,7 +60,7 @@ class Networking:
                 datadict = json.loads(str(data))
                 if "metadata" not in datadict:
                     datadict["metadata"] = {}
-                datadict["metadata"].update({"websocket":websocket})
+                #datadict["metadata"].update({"websocket":websocket})
                 await self.MsgHandler.messagehandler(websocket, datadict)
         except Exception as e:
             self.logger("ERROR", "alert", "red")
@@ -94,7 +94,7 @@ class Networking:
             websocket = websockdict[name]
             try:
                 await websocket.send(json.dumps(message))
-                self.logger("message sent")
+                self.logger(f"message: \"{message}\" sent")
                 return {"status": 200, "resource":message}
             except Exception as e:
                 return {"status": 503, "resource": f"sending to {name} failed."}
@@ -128,57 +128,6 @@ class Networking:
             elif search in str(id):
                 finalnames.append(machine)
         return finalnames
-
-    async def oldmessagehandler(self, messagedict):
-        command = messagedict["operation"] #TODO: make this lists, so you can accept multiple commands at a time
-
-        if command == "signin":
-            self.logger("Got sign in request!")
-            name = messagedict["data"]["name"]
-            type = messagedict["data"]["type"]
-            subs = messagedict["data"]["subscriptions"]
-            capabilities = messagedict["data"]["capabilities"]
-            websocket = messagedict["metadata"]["websocket"]
-            address = websocket.remote_address[0]
-            if name in self.websockdict:
-                self.logger(f"closing old websocket for {name}")
-                #await self.websockdict[name].close(4000)
-            self.websockdict[name] = websocket
-            
-            # TODO: make this respond to what the user has actually sent(something might be missing)
-            newdata = {"type":type, "subscriptions":subs, "lastaddress":address, "capabilities":capabilities}
-            result = settings().setusersettings(name, newdata)
-            if result["status"] == 201: # 201 because creation
-                self.logger(result["resource"], "debug")
-                id = result["resource"]["id"]
-                msg = json.dumps({"status":200, "command":"signin", "id":id})
-            else: # maybe do different error codes here at some point
-                msg = json.dumps({"status":503, "resource":"failed to sign in", "command":"signin"})
-            await self.send(msg, messagedict["metadata"]["websocket"])
-
-        if command == "anime":
-            id = str(messagedict["id"])
-            numberofshows = 1
-            if "data" in messagedict.keys():
-                numberofshows = messagedict["data"]["shows"]
-            targetlist = self.findtarget(id)
-            if len(targetlist) > 0:
-                animeresults = anime().getshows(numberofshows)
-                animeresults["command"] = "anime"
-                self.logger(f"targetlist: {targetlist}")
-                for target in targetlist:
-                    await self.sendbyname(animeresults, target)
-
-        if command == "weather":
-            senddict = {"command": "weather"}
-            id = str(messagedict["id"])
-            targetlist = self.findtarget(id)
-            if len(targetlist) > 0:
-                weatherresults = weather().getcurrentweather()["resource"]
-                weatherresults["command"] = "weather"
-                self.logger(f"targetlist: {targetlist}")
-                for target in targetlist:
-                    await self.sendbyname(weatherresults, target)
 
         
     def startserving(self):

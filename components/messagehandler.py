@@ -75,9 +75,10 @@ class messagehandler:
 
     async def sendmsg(self, ws, message):
         await ws.send(message)
+        self.logger(f"Message: \"{message}\" sent!")
 
-    def messagebuilder(self, category, type, data, metadata = {}):
-        finalmsg = json.dumps({"category": category, "type": type, "data": data, "metadata": metadata})
+    def messagebuilder(self, category, type, data, metadata = {}, status = "200"):
+        finalmsg = json.dumps({"status":status, "category": category, "type": type, "data": data, "metadata": metadata})
         return finalmsg
 
     #TODO check if the reserved keyword type works here ;), furthermore, nice job on replacing this
@@ -101,22 +102,26 @@ class messagehandler:
         if category == "help":
             if type == "anime":
                 methods = ["list", "latest", "showinfo"]
-                helpdata = data["method"] or None
+                helpdata = data.get("method") or None
                 if helpdata == None:
                     message = "Please try inserting one of the methods as data, like: data:{\"method\":\"list\"}"
                     finaldict = {"status": 200, "methods": methods, "message":message, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, message, metadata)
                     await self.sendmsg(ws, finaldict)
                 elif helpdata == "list":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, message, metadata)
                     await self.sendmsg(ws, finaldict)
                 elif helpdata == "latest":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, message, metadata)
                     await self.sendmsg(ws, finaldict)
                 elif helpdata == "showinfo":
                     message = "TODO implement help message"
                     finaldict = {"status": 200, "message":message, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, message, metadata)
                     await self.sendmsg(json.dumps(finaldict))
 
         if category == "admin":
@@ -146,18 +151,23 @@ class messagehandler:
                     msg = self.messagebuilder(category, type, data, metadata)
                 await self.sendmsg(ws, msg)
                 self.logger("Sent Message!", "debug", "red")
+
         if category == "test":
             if type == "failure":
-                finaldict = {"status": 406, "category": category, "type": type, "data":{"message":"Failure is not acceptable"}}
+                data = {"message":"Failure is not acceptable"}
+                finaldict = self.messagebuilder(category, type, data)
                 await self.sendmsg(ws, finaldict)
 
             if type == "long":
-                finaldict = {"status": 200, "category": category, "type": type, "data":{"message":"Pfft that took a while.."}}
+                data = {"message":"Pfft that took a while.."}
+                finaldict = self.messagebuilder(category, type, data)
+
                 sleep(5)
                 await self.sendmsg(ws, finaldict)
 
             if type == "short":
-                finaldict = {"status": 200, "category": category, "type": type, "data":{"message":"That was quick!"}}
+                data = {"message":"That was quick!"}
+                finaldict = self.messagebuilder(category, type, data)
                 await self.sendmsg(ws, finaldict)
 
 
@@ -175,17 +185,20 @@ class messagehandler:
                             entry = maindict[name]
                             entry["title"] = name
                             anilist.append(entry)
-                    finaldict = {"status": 200, "category": category, "type": type, "data":{"list":anilist}, "metadata":metadata}
+                    data = {"list":anilist}
+                    finaldict = {"status": 200, "category": category, "type": type, "data":data, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, data, metadata)
                     await self.sendmsg(ws, finaldict)
 
                 else:
+                    data = {"error":"error"}
                     finaldict = {"status": 500, "category": category, "type": type, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, data, metadata)
                     await self.sendmsg(ws, finaldict)
 
             if type == "latest":
                 preanidict = settings().getsettings("anime") # get full anime dict
                 if preanidict["status"] == 200:
-
                     anidict = preanidict["resource"]
                     latestshow = anidict["lastshow"] # catch errors for these
                     anilist = anidict["list"]
@@ -193,9 +206,8 @@ class messagehandler:
                     showinfo = maindict[latestshow]
                     showinfo["title"] = latestshow
                     finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata": metadata}
-                    self.logger(finaldict, "debug", "blue")
+                    finaldict = self.messagebuilder(category, type, showinfo, metadata)
                     await self.sendmsg(ws, finaldict)
-                    self.logger("SENT MESSAGE")
 
             if type == "showinfo":
                 targetshow = data["show"]
@@ -205,6 +217,7 @@ class messagehandler:
                     showinfo = maindict[targetshow] # might not exist
                     showinfo["title"] = targetshow
                     finaldict = {"status": 200, "category": category, "type": type, "data":showinfo, "metadata":metadata}
+                    finaldict = self.messagebuilder(category, type, showinfo, metadata)
                     await self.sendmsg(ws, finaldict)
 
         if category == "weather":

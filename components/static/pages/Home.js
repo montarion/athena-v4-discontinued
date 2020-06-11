@@ -33,7 +33,7 @@ class HomePage extends LitElement {
     this.eventCard = { type: "events", title: "Upcoming Events", subtitle: "FortaRock 2020", bgURL: "https://images0.persgroep.net/rcs/rp7cchjFlYAS8JMJNuHJL0oSzP0/diocontent/149781697/_fitwidth/694/?appId=21791a8992982cd8da851550a453bd7f&quality=0.8" }
     this.setPageHandler();
     this.getLatestAnime();
-    // setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
+    //setTimeout(() => networking.connect().then(ws => networking.sendmessage(ws, { category: "test", type: "failure" })), 1000);
   }
 
   disconnectedCallBack() { // on element Destroy
@@ -46,15 +46,17 @@ class HomePage extends LitElement {
 
     // keep correct reference 
     var self = this;
+    console.log("getting latest anime")
+    // default values
+    // var bannerurl = "https://omegamma.com.au/wp-content/uploads/2017/04/default-image.jpg"
+    //self.latestAnime = {"title":"anime", "art":{"banner": bannerurl}, "lastep": "02"};
 
     // as soon as socket is returned, lets send a request
     networking.connect().then(ws => {
-
-      //pass the opened connection to the function, the request and the callback 
+      // pass the opened connection to the function, the request and the callback 
       networking.sendmessage({ category: "anime", type: "latest" },
         function (latestAnime) { // pass the callback function
           self.latestAnime = latestAnime.data; //set latestAnime in Home.js
-          console.log(self.latestAnime)
         });
 
     }).catch(error => { // errors with socket connection end up here
