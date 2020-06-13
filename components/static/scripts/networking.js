@@ -1,7 +1,7 @@
 // networking
 
 var ws = new WebSocket("ws://83.163.109.161:8000/");
-var signindata = {"name": "website", "devtype": "website", "subscriptions": ["anime", "notifications"],"capabilities": []}
+var signindata = {"name": "website", "devtype": "website", "subscriptions": ["anime", "notifications", "weather"],"capabilities": []}
 
 // remove previous socket
 $(window).on('beforeunload', function(){
