@@ -1,13 +1,14 @@
-import os, redis, json
+import os, redis, json, schedule
 from time import sleep
 from fuzzywuzzy import process 
 from components.logger import logger as mainlogger
 from components.anime import anime
-from components.events import Event
 from components.weather import weather
+import components.helpers.Q as Q
 
 class Modules:
     def __init__(self):
+        self.q = Q.baseQueue
         self.r = redis.Redis(host='localhost', port=6379, db=0)
         self.tag = "modules"
 
@@ -15,15 +16,18 @@ class Modules:
         mainlogger().logger(self.tag, msg, type, colour)
 
     def standard(self):
-        sleep(10)
+        #sleep(10)
+        schedule.every(20).seconds.do(anime().getshows)
+        schedule.every(5).seconds.do(weather().getcurrentweather)
         while True:
-            self.logger("Running anime!")
-            anime().getshows()
-            self.logger("Running weather!")
-            weather().getcurrentweather()
+            #self.logger("Running anime!")
+            #anime().getshows()
+            #self.logger("Running weather!")
+            #weather().getcurrentweather()
             #Event().anime()
-            sleep(20)
-
+            #sleep(20)
+            schedule.run_pending()
+            sleep(5)
     def getlocation(self):
         pass
 

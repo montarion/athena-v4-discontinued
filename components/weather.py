@@ -1,8 +1,9 @@
-import os, requests, json, redis, re, time
+import os, requests, json, redis, re, time, traceback
 
 from components.logger import logger as mainlogger
 from components.settings import settings
 from components.events import Event
+
 class weather:
     def __init__(self):
         self.tag = "weather"
@@ -14,17 +15,18 @@ class weather:
         mainlogger().logger(self.tag, msg, type, colour)
 
     def getcurrentweather(self):
+        self.logger("CHANGE WEATHER INTERVAL", "alert", "red")
         prelocation = settings().getsettings("personalia", "location")["resource"]
 
         if "coords" not in prelocation:
-            self.logger("Unable to find coordinates")
+            self.logger("Unable to find coordinates","alert", "red")
             # ask for location(TODO: modules > getlocation?)
             # then try again
             #self.getforecast()
 
         lat, lon = prelocation["coords"]
         if "apikey" not in prelocation:
-            self.logger("Weather api key not found.")
+            self.logger("Weather api key not found.", "alert", "red")
             # run setup(TODO) again, explicitely asking for the weather api key.
             # then try again
             #self.getforecast()
@@ -36,8 +38,11 @@ class weather:
 
         #TODO try-catch this HTTP request
         res = requests.get(baseurl).json()
-        self.logger(res.keys())
-        
+        if len(res.keys()) == 2:
+            # error occured, read message
+            self.logger(f"Error: {res['cod']}", "alert", "red")
+            self.logger(f"Message: {res['message']}", "alert", "red") 
+
         try:
             timezone = res["timezone"]
             # maybe write to file
@@ -54,7 +59,6 @@ class weather:
             windspeed = cur["wind_speed"]
             icon = cur["weather"][0]["icon"]
             iconbase = "http://openweathermap.org/img/wn/"
-            self.logger(f"icon is {icon}")
             iconurl = iconbase + icon + "@2x.png"
             curdict = {"location": title, "time": dt, "temp":temp, "rain":rain, "sunrise":sunrise, "sunset":sunset, "clouds":clouds, "windspeed":windspeed, "iconurl":iconurl}
             # cache this to file, maybe?
@@ -62,9 +66,7 @@ class weather:
             if preoldweather["status"] == 200:
                 oldweather = preoldweather["resource"]
                 oldtime = oldweather["time"]
-                self.logger(f"oldtime: {oldtime} - newtime: {dt}", "debug")
                 timediff = dt - oldtime
-                self.logger(timediff)
                 if timediff > self.refreshtime:
                     settings().setsettings("weather", "current", curdict)
                     Event().weather(curdict)
@@ -74,5 +76,6 @@ class weather:
                 Event().weather(curdict)
             return {"status":200, "resource":curdict}
         except Exception as e:
-            self.logger(e, "alert", "red")
+            #self.logger(e, "alert", "red")
+            traceback.print_exc()
             return {"status":503, "resource": "something went wrong."}

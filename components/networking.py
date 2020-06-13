@@ -1,4 +1,4 @@
-import websockets, asyncio, os, json, jsonpickle, re, requests, redis, threading
+import websockets, asyncio, os, json, jsonpickle, re, requests, redis, threading, uuid
 from time import sleep
 
 from components.logger import logger as mainlogger
@@ -6,10 +6,12 @@ from components.settings import settings
 from components.anime import anime
 from components.weather import weather
 from components.messagehandler import messagehandler
+import components.helpers.Q as Q
 
 class Networking:
     def __init__(self):
         self.logger("started")
+        self.q = Q.baseQueue
         self.MsgHandler = messagehandler()
         self.userdict = {}
         self.loop = asyncio.new_event_loop()
@@ -33,18 +35,20 @@ class Networking:
             if msg and type(msg["data"]) != int:
                 msgdata = json.loads(msg["data"].decode())
                 category = msgdata["category"]
-                msgtype = msgdata["type"]
-                data = msgdata["data"]
-                metadata = msgdata.get("metadata",{})
                 target = msgdata["target"]
-                self.logger(msgdata, "debug", "red")
-                msg = {"category":category, "type":msgtype, "data":data, "metadata":metadata}
-                self.logger(f"message is: \n{msg}")
+                if category == "sendmsg":
+                    realdata = json.loads(msgdata["data"])
+                    category = realdata["category"]
+                    msgtype = realdata["type"]
+                    data = realdata["data"]
+                    metadata = realdata["metadata"]
+                    metadata["guid"] = self.createGUID()
+                    msg = {"status": 200, "category": category, "type": msgtype, "data": data, "metadata": metadata}
+
                 pretargetlist = settings().findtarget(target)
                 if pretargetlist["status"] == 200:
                     targetlist = pretargetlist["resource"]
                     for target in targetlist:
-                        self.logger(f"target is: {target}")
                         await self.MsgHandler.sendbyname(msg, target)
                 else:
                     self.logger(pretargetlist["resource"])
@@ -104,6 +108,10 @@ class Networking:
     def getwebsockdict(self):
         res = jsonpickle.decode(self.r.get("socketdict"))
         return res
+
+    def createGUID(self):
+        guid = str(uuid.uuid4()) #TODO onnodig
+        return guid
 
     def findtarget(self, search):
         search = str(search)

@@ -3,10 +3,14 @@ from time import sleep
 
 from components.logger import logger as mainlogger
 from components.settings import settings
+from components.anime import anime
+from components.weather import weather
+import components.helpers.Q as Q
 
 class messagehandler:
     def __init__(self):
         self.websockdict = {}
+        self.q = Q.baseQueue
         self.r = redis.Redis(host='localhost', port=6379, db=0)
 
     def logger(self, msg, type="info", colour="none"):
@@ -67,10 +71,13 @@ class messagehandler:
         return finalnames
 
     def savesocket(self, ws, id):
-        self.logger(type(ws))
+        self.logger("Saving socket")
         self.websockdict[id] = ws
         sdict = jsonpickle.encode({id:ws})
         self.r.set("socketdict", sdict)
+        self.q.put({"websockdict":self.websockdict})
+        
+        
         return {"status": 200, "function":"savesocket", "data":{"ws":ws, "id":id}}
 
     async def sendmsg(self, ws, message):
@@ -83,6 +90,7 @@ class messagehandler:
 
     #TODO check if the reserved keyword type works here ;), furthermore, nice job on replacing this
     async def messagehandler(self, ws, message):
+        self.logger(message, "debug", "blue")
         category = message["category"]
         type = message["type"]
         data = message.get("data", {}) # optional
@@ -220,15 +228,13 @@ class messagehandler:
                     finaldict = self.messagebuilder(category, type, showinfo, metadata)
                     await self.sendmsg(ws, finaldict)
 
-        if category == "weather":
-            # TODO remove when implemented
-            results = weather().getcurrentweather()["resource"]
-            self.logger(results)
-            finaldict = {"status": 200, "category": category, "type": "current", "data": results, "metadata":metadata}
-            await self.sendmsg(ws, finaldict)
-            if type == "current": # require data to include location
-                # TODO implement
-                pass
+        if category == "weather": # requires a known and recent location.
+            if type == "current":
+                # TODO remove when implemented
+                data = weather().getcurrentweather()["resource"]
+                self.logger(data)
+                finaldict = self.messagebuilder(category, type, data, metadata)
+                await self.sendmsg(ws, finaldict)
         if category == "calendar":
             # TODO remove when implemented
             finaldict = {"status": 501, "category": category, "metadata":metadata}

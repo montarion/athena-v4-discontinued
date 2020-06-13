@@ -22,7 +22,7 @@ class anime:
         if predict["status"] == 200:
             self.maindict = predict["resource"].get("maindict", {})
             #self.maindict = predict["resource"]
-            self.animedict = predict["resource"]
+            #self.animedict = predict["resource"]
         else:
             self.maindict = {}
         #self.maindict = #json.loads(self.r.get("animedict"))
@@ -63,17 +63,24 @@ class anime:
                 sessiondict["art"]["banner"] = self.maindict[show]["art"]["banner"]
 
                 self.maindict[show]["lastep"] = episode
-                if self.animedict.get("lastshow", "show") != show:
+                animedict = settings().getsettings("anime", None)["resource"]
+                self.logger(animedict["lastshow"])
+                if animedict.get("lastshow", "show") != show:
                     self.download(show, link)
                     ct = int(time.time())
                     self.maindict[show]["aired_at"] = ct
                     sessiondict["aired_at"] = ct
-                    Event().anime(sessiondict)
+                    targetlist = settings().checkavailability("computing")["resource"]
+                    if len(targetlist) == 0:
+                        Event().anime("aired")
                 if self.firstshow:
                     self.firstshow = False
                     settings().setsettings("anime", "lastshow", show)
                     self.r.set("lastshow", json.dumps(sessiondict))
-            x += 1
+                x += 1
+            else:
+                number += 1
+                x += 1
         self.r.set("animedict", json.dumps(self.maindict))
         settings().setsettings("anime", "maindict", self.maindict)
         

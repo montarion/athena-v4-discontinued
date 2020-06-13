@@ -9,12 +9,13 @@ try:
     from components.logger import logger as mainlogger
     from components.weather import weather
     from components.messagehandler import messagehandler
+    import components.helpers.Q as Q
 except:
     from settings import settings
     from logger import logger as mainlogger
     from weather import weather
     from messagehandler import messagehandler
-
+    import helpers.Q as Q
 import asyncio, sys, os, json, redis, threading, traceback, uuid, random
 from time import sleep
 
@@ -24,6 +25,7 @@ from time import sleep
 
 class website:
     def __init__(self):
+        self.q = Q.baseQueue
         self.app = Flask(__name__)
         self.sockets = Sockets(self.app)
         self.MsgHandler = messagehandler()
@@ -42,23 +44,18 @@ class website:
         while True:
             msg = self.p.get_message()
             if msg and type(msg["data"]) != int:
-                data = json.loads(msg["data"].decode())
-                command = data["command"]
-                if command == "sendmsg":
-                    msg = data["msg"]
-                    realcommand = msg["command"]
-                    msg.pop("command", "")
-                    realmetadata = msg.get("metadata", {})
-                    msgtype = msg["type"]
-                    msg.pop("type", "")
-                    target = data["target"]
-                    realmetadata["target"] = target
-                    realmetadata["guid"] = self.createGUID()
-                    msg.pop("metadata", "")
-                    realdata = msg
-                    msg = {"status": 200, "command": realcommand, "type": msgtype, "data": realdata, "metadata": realmetadata}
-                    self.logger(f"message is: \n{msg}")
-                    for ws in self.socketlist:
+                msgdata = json.loads(msg["data"].decode())
+                category = msgdata["category"]
+                target = msgdata["target"]
+                if category == "sendmsg":
+                    realdata = json.loads(msgdata["data"])
+                    category = realdata["category"]
+                    msgtype = realdata["type"]
+                    data = realdata["data"]
+                    metadata = realdata["metadata"]
+                    metadata["guid"] = self.createGUID()
+                    msg = {"status": 200, "category": category, "type": msgtype, "data": data, "metadata": metadata}
+                    for ws in self.q.get()["websockdict"]:
                         self.sendmsg(ws, msg)
             sleep(3)
 
